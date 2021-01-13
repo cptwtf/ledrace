@@ -1,31 +1,66 @@
-/**
- * Blink
- *
- * Turns on an LED on for one second,
- * then off for one second, repeatedly.
- */
-#include "Arduino.h"
+#include <Adafruit_NeoPixel.h>
+#ifdef __AVR__
+  #include <avr/power.h>
+#endif
+#define PIN        2
+#define NUMPIXELS 300
 
-// Set LED_BUILTIN if it is not defined by Arduino framework
-#define LED_BUILTIN 13
+Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+#define DELAYVAL 500
 
-void setup()
+void setup() {
+#if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
+  clock_prescale_set(clock_div_1);
+#endif
+
+  pixels.begin();
+
+  //draw player 1 start position
+  pixels.setPixelColor(0, pixels.Color(0, 150, 0));
+  pixels.setPixelColor(1, pixels.Color(0, 150, 0));
+  pixels.setPixelColor(2, pixels.Color(0, 150, 0));
+  pixels.show();
+}
+
+//startposition
+int player1LastPosition = 2;
+int player1CurrentPosition = 2;
+
+//Draw players
+void draw(int playerLastPosition, int playerCurrentPosition)
 {
-  // initialize LED digital pin as an output.
-  pinMode(LED_BUILTIN, OUTPUT);
+  int playerLastPositionLocal = playerLastPosition;
+  //While player real location and player drawn location differ
+  while(playerLastPositionLocal != playerCurrentPosition)
+  {
+    //if player real position is in front of current drawn position
+    if(playerLastPositionLocal < playerCurrentPosition)
+    {
+      //unset last entity pixel
+      int lastEntityPixel = playerLastPosition - 2;
+      pixels.setPixelColor(lastEntityPixel, pixels.Color(0, 0, 0));
+
+       //set next pixels
+       int nextEntityPixel = playerLastPosition + 1;
+       pixels.setPixelColor(nextEntityPixel, pixels.Color(0, 150, 0));
+
+       pixels.show();
+       //update playerLastPosisition
+       playerLastPositionLocal++;
+    }
+  }
+}
+
+void update()
+{
+  delay(300);
+  player1CurrentPosition++;
 }
 
 void loop()
 {
-  // turn the LED on (HIGH is the voltage level)
-  digitalWrite(LED_BUILTIN, HIGH);
+  draw(player1LastPosition, player1CurrentPosition);
+  update();
 
-  // wait for a second
-  delay(1000);
 
-  // turn the LED off by making the voltage LOW
-  digitalWrite(LED_BUILTIN, LOW);
-
-   // wait for a second
-  delay(1000);
 }
