@@ -56,7 +56,7 @@ void draw(int playerLastPosition, int playerCurrentPosition)
        playerLastPositionLocal++;
     }
     //remove this line for fancy bug
-    //player1LastPosition = playerLastPositionLocal;
+    player1LastPosition = playerLastPositionLocal;
   }
 }
 
