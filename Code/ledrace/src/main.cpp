@@ -8,6 +8,15 @@
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 #define DELAYVAL 500
 
+//start/finish line
+int startFinishLine = 3;
+byte startFinishLineColorArrayRGB[] = {255,255,255};
+
+//startposition
+int player1DrawPosition = startFinishLine - 1;
+int player1LogicPosition = startFinishLine - 1;
+byte player1ColorArrayRGB[] = {0,0,255};
+
 void setup() {
 #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
   clock_prescale_set(clock_div_1);
@@ -15,20 +24,25 @@ void setup() {
 
   Serial.begin(115200);
   Serial.println("debug setup");
-  pixels.begin();
 
+  pixels.begin();
   pixels.clear();
+
   //draw player 1 start position
-  pixels.setPixelColor(0, pixels.Color(0, 150, 0));
-  pixels.setPixelColor(1, pixels.Color(0, 150, 0));
-  pixels.setPixelColor(2, pixels.Color(0, 150, 0));
+  pixels.setPixelColor(player1DrawPosition - 2,
+                      pixels.Color(player1ColorArrayRGB[0], player1ColorArrayRGB[1], player1ColorArrayRGB[2]));
+  pixels.setPixelColor(player1DrawPosition - 1,
+                      pixels.Color(player1ColorArrayRGB[0], player1ColorArrayRGB[1], player1ColorArrayRGB[2]));
+  pixels.setPixelColor(player1DrawPosition,
+                      pixels.Color(player1ColorArrayRGB[0], player1ColorArrayRGB[1], player1ColorArrayRGB[2]));
+
+  //draw start/finish line
+  pixels.setPixelColor(startFinishLine,
+                      pixels.Color(startFinishLineColorArrayRGB[0], startFinishLineColorArrayRGB[1], startFinishLineColorArrayRGB[2]));
+
   pixels.show();
 }
 
-//startposition
-int player1DrawPosition = 2;
-int player1LogicPosition = 2;
-byte player1ColorArrayRGB[] = {0,0,255};
 
 //Draw players
 void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArrayRGB[])
@@ -70,7 +84,7 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
 
 void update()
 {
-  Serial.println("debug update"+player1LogicPosition);
+  Serial.println("debug update");
   delay(50);
   player1LogicPosition++;
 }
