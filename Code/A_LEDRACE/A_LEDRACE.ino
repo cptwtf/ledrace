@@ -10,3 +10,4 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 int m = 1;
+int a; int b; int c; int d; int e;

@@ -14,7 +14,7 @@ void setup() {
 
 void loop() {
   
-  while(m == 1)//einzelspieler
+  while(m == 1)//start
   {
   display.clearDisplay();
   delay(300);
@@ -24,11 +24,11 @@ void loop() {
   delay(300);
   display.drawBitmap(0,0, menuart2, 128, 64, 1);
   display.display();
-  
+  abfrage();
 }
 
 
- while(m == 2)//multispieler
+ while(m == 2)//einzelspieler
   {
   display.clearDisplay();
   delay(300);
@@ -38,10 +38,10 @@ void loop() {
   delay(300);
   display.drawBitmap(0,0, menuart3, 128, 64, 1);
   display.display();
-  
+  abfrage();
 }
 
-while(m == 3)//optionen
+while(m == 3)//multispieler
   {
   display.clearDisplay();
   delay(300);
@@ -51,10 +51,10 @@ while(m == 3)//optionen
   delay(300);
   display.drawBitmap(0,0, menuart4, 128, 64, 1);
   display.display();
-  
+  abfrage();
 }
 
-while(m == 4)
+while(m == 4)//optionen
   {
   display.clearDisplay();
   delay(300);
@@ -64,7 +64,7 @@ while(m == 4)
   delay(300);
   display.drawBitmap(0,0, menuart5, 128, 64, 1);
   display.display();
-  
+  abfrage();
 }
 
 while(m == 5)//infos
@@ -77,6 +77,6 @@ while(m == 5)//infos
   delay(300);
   display.drawBitmap(0,0, menuart6, 128, 64, 1);
   display.display();
-  
+  abfrage();
 }
 }
