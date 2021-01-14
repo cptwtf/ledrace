@@ -66,7 +66,6 @@ while(m == 2 && w == 3)//Logo
   display.display();
 
 }
-
 while(m == 3 && w == 1)//einzelspieler
   {
   display.clearDisplay();
@@ -78,6 +77,31 @@ while(m == 3 && w == 1)//einzelspieler
   display.drawBitmap(0,0, menuart4, 128, 64, 1);
   display.display();
   abfrage();
+}
+
+ while(m == 3 && w == 2 && s == 1)//einzelspieler JA 
+  {
+  delay(300);
+  display.clearDisplay();
+  display.drawBitmap(0,0, spielenmenuart2, 128, 64, 1);
+  display.display();
+  abfrage2();
+}
+ while(m == 3 && w == 2 && s == 0)//einzelspieler NEIN
+  {
+  delay(300);
+  display.clearDisplay();
+  display.drawBitmap(0,0, spielenmenuart3, 128, 64, 1);
+  display.display();
+  abfrage2();
+}
+while(m == 3 && w == 3)//einzelspielerLogo
+  {
+  delay(300);
+  display.clearDisplay();
+  display.drawBitmap(0,0, logoart1, 128, 64, 1);
+  display.display();
+
 }
 
 while(m == 4 && w == 1)//optionen
