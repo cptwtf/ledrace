@@ -14,7 +14,7 @@ void setup() {
 
 void loop() {
   
-  while(m == 1 && w == 1 || m < 1 && w == 1)//start
+  while(m == 1 && w == 1 || m < 1 && w == 1 || m == 6 && w == 1 || m > 6 && w == 1)//start
   {
   display.clearDisplay();
   delay(300);
@@ -24,6 +24,7 @@ void loop() {
   delay(300);
   display.drawBitmap(0,0, menuart2, 128, 64, 1);
   display.display();
+  resetcount();
   abfrage();
 }
 
@@ -38,6 +39,7 @@ void loop() {
   delay(300);
   display.drawBitmap(0,0, menuart3, 128, 64, 1);
   display.display();
+  resetcount();
   abfrage();
 }
 
@@ -76,6 +78,7 @@ while(m == 3 && w == 1)//einzelspieler
   delay(300);
   display.drawBitmap(0,0, menuart4, 128, 64, 1);
   display.display();
+  resetcount();
   abfrage();
 }
 
@@ -114,10 +117,11 @@ while(m == 4 && w == 1)//optionen
   delay(300);
   display.drawBitmap(0,0, menuart5, 128, 64, 1);
   display.display();
+  resetcount();
   abfrage();
 }
 
-while(m == 5 && w == 1 || m > 5 && w == 1)//infos
+while(m == 5 && w == 1)//infos
   {
   display.clearDisplay();
   delay(300);
@@ -127,6 +131,25 @@ while(m == 5 && w == 1 || m > 5 && w == 1)//infos
   delay(300);
   display.drawBitmap(0,0, menuart6, 128, 64, 1);
   display.display();
+  resetcount(); 
   abfrage();
 }
+
+ while(m == 5 && w == 2 && s == 1)//infobase 
+  {
+  delay(300);
+  display.clearDisplay();
+  display.drawBitmap(0,0, infoart2, 128, 64, 1);
+  display.display();
+  abfrage3();
+}
+
+ while(m == 5 && w == 2 && s == 0)//inforeturn 
+  {
+  delay(300);
+  display.clearDisplay();
+  display.drawBitmap(0,0, infoart3, 128, 64, 1);
+  display.display();
+  abfrage3();
+  }
 }

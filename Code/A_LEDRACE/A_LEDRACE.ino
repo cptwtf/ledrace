@@ -9,7 +9,7 @@
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
-byte m = constrain(m,0,6);
-byte w = constrain(w,0,5);
+byte m ;
+byte w ;
 bool s = 1;
 int a; int b; int c; int d; int e; 
