@@ -10,12 +10,12 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 //start/finish line
 int startFinishLine = 3;
-byte startFinishLineColorArrayRGB[] = {255,255,255};
+byte startFinishLineColorArrayRGB[] = {254,254,254};
 uint32_t startFinishLineColorInteger = pixels.Color(startFinishLineColorArrayRGB[0], startFinishLineColorArrayRGB[1], startFinishLineColorArrayRGB[2]);
 //startposition
 int player1DrawPosition = startFinishLine - 1;
 int player1LogicPosition = startFinishLine - 1;
-byte player1ColorArrayRGB[] = {0,0,255};
+byte player1ColorArrayRGB[] = {0,0,254};
 uint32_t player1ColorInteger = pixels.Color(player1ColorArrayRGB[0], player1ColorArrayRGB[1], player1ColorArrayRGB[2]);
 
 bool gameInitDone = false;
@@ -48,6 +48,12 @@ void initGame()
   pixels.setPixelColor(startFinishLine,
                         pixels.Color(startFinishLineColorArrayRGB[0], startFinishLineColorArrayRGB[1], startFinishLineColorArrayRGB[2]));
 
+  //draw color merge test NUMPIXELS
+  for(int i = 0; i < NUMPIXELS; i++)
+  {
+    if(i % 6 == 0) { pixels.setPixelColor(i, pixels.Color(254,0,0)); }
+  }
+
   pixels.show();
   gameInitDone = true;
 }
@@ -72,7 +78,30 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
       else { sternmostPixel = playerDrawPositionLocal - 2; }
 
       //unset last entity pixel
-      pixels.setPixelColor(sternmostPixel, pixels.Color(0, 0, 0));
+      //if the pixel to unset has not the player entity color
+      if(pixels.getPixelColor(sternmostPixel) != pixels.Color(playerColorArrayRGB[0], playerColorArrayRGB[1], playerColorArrayRGB[2]))
+      {
+        //get pixelcolor
+        uint32_t pixelColor = pixels.getPixelColor(sternmostPixel);
+
+        //convert to byte array rgb values
+        byte unmixedCol[3];
+        unmixedCol[2] = pixelColor;
+        unmixedCol[1] = pixelColor >> 8;
+        unmixedCol[0] = pixelColor >> 16;
+
+        //retract entity color
+        unmixedCol[0]= (unmixedCol[0] - (playerColorArrayRGB[0] / 2)) * 2;
+        unmixedCol[1]= (unmixedCol[1] - (playerColorArrayRGB[1] / 2)) * 2;
+        unmixedCol[2]= (unmixedCol[2] - (playerColorArrayRGB[2] / 2)) * 2;
+
+        //set "demerged" color
+        pixels.setPixelColor(sternmostPixel, pixels.Color(unmixedCol[0], unmixedCol[1], unmixedCol[2]));
+      }
+      else //if the pixel to unset has the same color as the player entity
+      {
+        pixels.setPixelColor(sternmostPixel, pixels.Color(0, 0, 0));
+      }
 
       //Strip End/Beginning handling
       int nextPixel;
@@ -80,7 +109,32 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
       else{ nextPixel = playerDrawPositionLocal + 1; }
 
        //set next pixel
-       pixels.setPixelColor(nextPixel, player1ColorInteger);
+       //check if next pixel empty
+       if(pixels.getPixelColor(nextPixel) == 0)
+       {
+         //set playercolor
+         pixels.setPixelColor(nextPixel, pixels.Color(playerColorArrayRGB[0], playerColorArrayRGB[1], playerColorArrayRGB[2]));
+       }
+       else //merge player color and pixel color if pixel already in use
+       {
+         //get pixelcolor
+         uint32_t pixelColor = pixels.getPixelColor(nextPixel);
+
+         //convert to byte array rgb values
+         byte mixedCol[3];
+         mixedCol[2] = pixelColor;
+         mixedCol[1] = pixelColor >> 8;
+         mixedCol[0] = pixelColor >> 16;
+
+         //merge colors
+         mixedCol[0] = (mixedCol[0] + playerColorArrayRGB[0]) / 2;
+      	 mixedCol[1] = (mixedCol[1] + playerColorArrayRGB[1]) / 2;
+         mixedCol[2] = (mixedCol[2] + playerColorArrayRGB[2]) / 2;
+
+         //set mixed color
+         pixels.setPixelColor(nextPixel, pixels.Color(mixedCol[0], mixedCol[1], mixedCol[2]));
+       }
+
 
        pixels.show();
        //update playerDrawPosition
@@ -92,15 +146,15 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
   }
 }
 
-void colorMergeTests()
+void colorMerge(byte playerColorArrayRGB[], uint32_t colorToMerge)
 {
   //WIP Farben zusammenrechenn auseinanderrechnen
-       byte p1col[] = {0,0,255};
-       byte p2col[] = {255,255,255};
+       byte p1col[] = {0,0,254};
+       byte p2col[] = {254,0,0};
        byte mixedCol[3];
        byte unmixedCol[3];
 
-       uint32_t p1color = pixels.Color(0, 0, 255);
+       uint32_t p1color = pixels.Color(0, 0, 254);
 
 
 
@@ -114,10 +168,11 @@ void colorMergeTests()
 
           pixels.setPixelColor(2, pixels.Color(mixedCol[0], mixedCol[1], mixedCol[2]));
 
+          /*
           byte test0a = mixedCol[0];
           byte test1a = mixedCol[1];
           byte test2a = mixedCol[2];
-
+          */
 
           //Get Pixel color, returns encoded color as 32 Bit Integer
          	uint32_t mixedPixel = pixels.getPixelColor(2);
@@ -128,11 +183,10 @@ void colorMergeTests()
          	mixedCol[0] = mixedPixel >> 16; // Blau = Bit 16-23
 
 
+          /* DEBUG
           byte test0b = mixedCol[0];
           byte test1b = mixedCol[1];
           byte test2b = mixedCol[2];
-
-
           delay(100);
 
           Serial.print("mixedCol 0a: ");
@@ -142,20 +196,21 @@ void colorMergeTests()
           Serial.print("mixedCol 2a: ");
           Serial.println(test2a);
 
-
           Serial.print("mixedCol 0b: ");
           Serial.println(test0b);
           Serial.print("mixedCol 1b: ");
           Serial.println(test1b);
           Serial.print("mixedCol 2b: ");
           Serial.println(test2b);
+          */
 
 
-          delay(1000);
          	//minus der halbe farbwert der abzuziehenden farbe, danach mal 2?
           unmixedCol[0]= (mixedCol[0] - (p1col[0] / 2)) * 2;
           unmixedCol[1]= (mixedCol[1] - (p1col[1] / 2)) * 2;
          	unmixedCol[2]= (mixedCol[2] - (p1col[2] / 2)) * 2;
+
+          delay(1000);
 
            pixels.setPixelColor(3, pixels.Color(unmixedCol[0], unmixedCol[1], unmixedCol[2]));
            pixels.show();
@@ -171,9 +226,9 @@ void update()
 void loop()
 {
   //Serial.println("debug loop");
-  colorMergeTests();
-  //if(!gameInitDone) { initGame();};
-  //draw(player1DrawPosition, player1LogicPosition, player1ColorArrayRGB);
-  //update();
+  //colorMerge();
+  if(!gameInitDone) { initGame();};
+  draw(player1DrawPosition, player1LogicPosition, player1ColorArrayRGB);
+  update();
 
 }
