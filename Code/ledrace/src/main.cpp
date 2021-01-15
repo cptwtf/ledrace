@@ -74,7 +74,7 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
 
 
 
- /* WIP Farben zusammenrechenn auseinanderrechnen 
+ /* WIP Farben zusammenrechenn auseinanderrechnen
       byte p1col[] = {0,0,255};
       byte p2col[] = {255,255,255};
       byte mixedCol[3];
