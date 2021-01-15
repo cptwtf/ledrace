@@ -7,6 +7,10 @@ void setup() {
   display.drawBitmap(0,0, pixelartbztg, 128, 64, 1);
   display.display();
   delay(2000);
+  #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
+  clock_prescale_set(clock_div_1);
+  #endif
+  pixels.begin();
   m = 1;
   w = 1;
 
@@ -66,6 +70,7 @@ while(m == 2 && w == 3)//Logo
   display.clearDisplay();
   display.drawBitmap(0,0, logoart1, 128, 64, 1);
   display.display();
+  light();
 
 }
 while(m == 3 && w == 1)//einzelspieler
@@ -104,6 +109,7 @@ while(m == 3 && w == 3)//einzelspielerLogo
   display.clearDisplay();
   display.drawBitmap(0,0, logoart1, 128, 64, 1);
   display.display();
+  light();
 
 }
 
