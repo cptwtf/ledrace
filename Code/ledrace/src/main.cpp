@@ -80,8 +80,11 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
     Serial.println(playerDrawPositionLocal);
     Serial.println(playerLogicPosition);
     //Serial.println("debug draw while");
-    //if player real position is in front of current drawn position
-    if(playerDrawPositionLocal < playerLogicPosition || (playerDrawPositionLocal == 299 && playerLogicPosition == 0))
+    //if player logic position is in front of current drawn position
+    if(playerDrawPositionLocal < playerLogicPosition ||
+      (playerDrawPositionLocal == 299 && playerLogicPosition <= 3) ||
+      (playerDrawPositionLocal == 298 && playerLogicPosition <= 3) ||
+      (playerDrawPositionLocal == 297 && playerLogicPosition <= 3))
     {
       //Strip End/Beginning handling
       int sternmostPixel;
