@@ -20,6 +20,8 @@ int player1DrawPosition = player1LogicPosition;
 byte player1ColorArrayRGB[] = {0,0,254};
 uint32_t player1ColorInteger = pixels.Color(player1ColorArrayRGB[0], player1ColorArrayRGB[1], player1ColorArrayRGB[2]);
 int player1Speed = 0;
+bool buttonPlayer1IsDown = false;
+
 
 unsigned long lastSpeedDecay = 0;
 
@@ -169,32 +171,30 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
 void update()
 {
   //Serial.println("debug update");
-  bool buttonIsDown = false;
 
   //If player can still gain speed
-  for(int i = 6; i >= 0; i-- )
-  {
     if(player1Speed < MAX_SPEED)
     {
-      if( digitalRead(PLAYERONEBUTTONPIN) == 1 && buttonIsDown == false)
+      if( digitalRead(PLAYERONEBUTTONPIN) == 1 && buttonPlayer1IsDown == false)
       {
         //Set flag that button is down
-        buttonIsDown = true;
+        buttonPlayer1IsDown = true;
         player1Speed++;
         Serial.println(player1Speed);
       }
-      else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonIsDown == true)
+      else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == true)
       {
-        buttonIsDown = false;
+        buttonPlayer1IsDown = false;
       }
 
     }
-  }
+
 
   //consume speed and update player position
   if(player1Speed / 3 >= 1)
   {
     player1LogicPosition += (player1Speed / 3);
+    player1Speed /= 2;
     if(player1LogicPosition > 299)
     {
       if(player1LogicPosition == 300) { player1LogicPosition = 0;}
