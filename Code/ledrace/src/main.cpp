@@ -5,7 +5,6 @@
 #define PIN               2
 #define PLAYERONEBUTTONPIN   4
 #define NUMPIXELS         300
-#define MAX_SPEED 100
 
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
@@ -21,15 +20,21 @@ int player1DrawPosition = player1LogicPosition;
 byte player1ColorArrayRGB[] = {0,0,254};
 uint32_t player1ColorInteger = pixels.Color(player1ColorArrayRGB[0], player1ColorArrayRGB[1], player1ColorArrayRGB[2]);
 int player1Speed = 0;
+int player1RollingPower = 0;
+int player1RollNow = 0;
 bool buttonPlayer1IsDown = false;
 
+
+const int MAX_SPEED = 100;
 const int SPEED30PERCENT = MAX_SPEED / 100 * 30;
 const int SPEED60PERCENT = MAX_SPEED / 100 * 60;
 const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
-unsigned long lastSpeedDecay = 0;
 
+unsigned long lastSpeedDecay = 0;
+unsigned long lastLoop = 0;
 //interval between speed decays in ms
-const long speedDecayInterval = 200;
+const long speedDecayInterval = 128;
+const long loopInterval = 32;
 
 bool gameInitDone = false;
 
@@ -183,7 +188,9 @@ void update()
       {
         //Set flag that button is down
         buttonPlayer1IsDown = true;
-        player1Speed++;
+        player1Speed += 1;
+        player1RollingPower = 3;
+
       }
       else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == true)
       {
@@ -233,9 +240,9 @@ void update()
       //standard decrease 10% (at least 1), 15% on 60% max speed, 25% on 90% max speed
       if(player1Speed <= SPEED30PERCENT)
       {
-        int speedDecrease = player1Speed / 100 * 10;
+        int speedDecrease = player1Speed / (float)100 * 5;
 
-        if(speedDecrease >= 1)
+        if(speedDecrease > 1)
         {
           player1Speed -= speedDecrease;
         }
@@ -246,16 +253,45 @@ void update()
       }
       else if(player1Speed <= SPEED60PERCENT)
       {
-        int speedDecrease = player1Speed / 100 * 15;
+        Serial.println("ELSE IF SPEED60PERCENT");
+        int speedDecrease = player1Speed / (float)100 * 6;
+        Serial.println(speedDecrease);
+
         player1Speed -= speedDecrease;
       }
       else if(player1Speed <= SPEED90PERCENT)
       {
-        int speedDecrease = player1Speed / 100 * 25;
+        int speedDecrease = (float)player1Speed / 100 * 7;
         player1Speed -= speedDecrease;
       }
       lastSpeedDecay = millis();
       //Serial.println("SPEED DECAY");
+    }
+
+    //if player gets to 0 speed but entity is marked as moving previously
+    if(player1RollingPower != 0)
+    {
+      //forward rolling power
+      if(player1RollingPower > 0)
+      {
+        Serial.println("PLAYER ROLLING POWER MORE THAN ZERO");
+        //skip every second speedcheck
+        if(player1RollNow < 10)
+        {
+          player1RollNow++;
+        }
+        else
+        {
+          //add some speed
+          player1Speed++;
+
+          //decrease rolling power counter
+          player1RollingPower--;
+
+          //prepare for next check
+          player1RollNow = 0;
+        }
+      }
     }
   }
 
@@ -269,8 +305,13 @@ void loop()
    initGame();
    delay(100);
  }
-draw(player1DrawPosition, player1LogicPosition, player1ColorArrayRGB);
-update();
+
+if(millis() - lastLoop > loopInterval)
+{
+  draw(player1DrawPosition, player1LogicPosition, player1ColorArrayRGB);
+  update();
+  lastLoop = millis();
+}
   //int buttonvalue = digitalRead(PLAYERONEBUTTONPIN);
  //Serial.print("loop");
 //  Serial.println(buttonvalue);
