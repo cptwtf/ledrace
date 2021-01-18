@@ -22,7 +22,7 @@ uint32_t player1ColorInteger = pixels.Color(player1ColorArrayRGB[0], player1Colo
 int player1Speed = 0;
 int player1RollingPower = 0;
 int player1RollNow = 0;
-int player1DecelerationMultiplier = 1;
+float player1DecelerationMultiplier = 1.0;
 bool buttonPlayer1IsDown = false;
 
 
@@ -193,11 +193,17 @@ void update()
 
         //Move button pressed so give some rolling power
         if(player1RollingPower < 2) { player1RollingPower = 2; }
-
+        if(player1DecelerationMultiplier > 1) {player1DecelerationMultiplier = 1.0;}
       }
       else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == true)
       {
         buttonPlayer1IsDown = false;
+      }
+      else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == false) //User stopped pressing the button
+      {
+        //add to deceleration multiplier so car gets slow quicker the longer user doesnt press the button
+        //should help with long "roll out" on high velocity
+        player1DecelerationMultiplier += 0.3;
       }
 
     }
@@ -241,6 +247,7 @@ void update()
       else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
     }
   }
+
   //slowly loose speed stat
   if(millis() - lastSpeedDecay > speedDecayInterval)
   {
@@ -250,7 +257,7 @@ void update()
       //standard decrease 10% (at least 1), 15% on 60% max speed, 25% on 90% max speed
       if(player1Speed <= SPEED30PERCENT)
       {
-        int speedDecrease = player1Speed / (float)100 * 5;
+        int speedDecrease = player1Speed / (float)100 * 2 * player1DecelerationMultiplier;
 
         if(speedDecrease > 1)
         {
@@ -264,14 +271,14 @@ void update()
       else if(player1Speed <= SPEED60PERCENT)
       {
         Serial.println("ELSE IF SPEED60PERCENT");
-        int speedDecrease = player1Speed / (float)100 * 6;
+        int speedDecrease = player1Speed / (float)100 * 2 * player1DecelerationMultiplier;
         Serial.println(speedDecrease);
 
         player1Speed -= speedDecrease;
       }
       else if(player1Speed <= SPEED90PERCENT)
       {
-        int speedDecrease = (float)player1Speed / 100 * 7;
+        int speedDecrease = (float)player1Speed / 100 * 3  * player1DecelerationMultiplier;
         player1Speed -= speedDecrease;
       }
       lastSpeedDecay = millis();
