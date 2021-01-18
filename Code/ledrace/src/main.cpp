@@ -26,7 +26,7 @@ bool buttonPlayer1IsDown = false;
 unsigned long lastSpeedDecay = 0;
 
 //interval between speed decays in ms
-const long speedDecayInterval = 1000;
+const long speedDecayInterval = 200;
 
 bool gameInitDone = false;
 
@@ -79,8 +79,8 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
   //While player real location and player drawn location differ
   while(playerDrawPositionLocal != playerLogicPosition)
   {
-    Serial.println(playerDrawPositionLocal);
-    Serial.println(playerLogicPosition);
+    //Serial.println(playerDrawPositionLocal);
+  //  Serial.println(playerLogicPosition);
     //Serial.println("debug draw while");
     //if player logic position is in front of current drawn position
     if(playerDrawPositionLocal < playerLogicPosition ||
@@ -158,7 +158,7 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
        if(playerDrawPositionLocal == 299) { playerDrawPositionLocal = 0; }
        else
        {
-         Serial.println("DRAW IS INCREMENTING PLAYERDRAWPOSITIONLOCAL");
+        //Serial.println("DRAW IS INCREMENTING PLAYERDRAWPOSITIONLOCAL");
          playerDrawPositionLocal++;
        }
     }
@@ -171,7 +171,8 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
 void update()
 {
   //Serial.println("debug update");
-
+  Serial.print("update begin player1speed: ");
+  Serial.println(player1Speed);
   //If player can still gain speed
     if(player1Speed < MAX_SPEED)
     {
@@ -180,7 +181,6 @@ void update()
         //Set flag that button is down
         buttonPlayer1IsDown = true;
         player1Speed++;
-        Serial.println(player1Speed);
       }
       else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == true)
       {
@@ -190,11 +190,10 @@ void update()
     }
 
 
-  //consume speed and update player position
-  if(player1Speed / 3 >= 1)
+  //evaluate speed and update player position
+  if(player1Speed / 3 >= 2)
   {
-    player1LogicPosition += (player1Speed / 3);
-    player1Speed /= 2;
+    player1LogicPosition += 3;
     if(player1LogicPosition > 299)
     {
       if(player1LogicPosition == 300) { player1LogicPosition = 0;}
@@ -202,8 +201,27 @@ void update()
       else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
     }
   }
-
-  //slowly (every 1000ms) loose speed stat
+  else if(player1Speed / 3 >= 1)
+  {
+    player1LogicPosition += 2;
+    if(player1LogicPosition > 299)
+    {
+      if(player1LogicPosition == 300) { player1LogicPosition = 0;}
+      else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
+      else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
+    }
+  }
+  else if(player1Speed >= 1)
+  {
+    player1LogicPosition += 1;
+    if(player1LogicPosition > 299)
+    {
+      if(player1LogicPosition == 300) { player1LogicPosition = 0;}
+      else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
+      else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
+    }
+  }
+  //slowly loose speed stat
   if(millis() - lastSpeedDecay > speedDecayInterval)
   {
     //only decay when more than 0
@@ -211,7 +229,7 @@ void update()
     {
       player1Speed--;
       lastSpeedDecay = millis();
-      Serial.println("SPEED DECAY");
+      //Serial.println("SPEED DECAY");
     }
   }
 
