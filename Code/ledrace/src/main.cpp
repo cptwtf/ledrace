@@ -22,6 +22,7 @@ uint32_t player1ColorInteger = pixels.Color(player1ColorArrayRGB[0], player1Colo
 int player1Speed = 0;
 int player1RollingPower = 0;
 int player1RollNow = 0;
+int player1DecelerationMultiplier = 1;
 bool buttonPlayer1IsDown = false;
 
 
@@ -33,7 +34,7 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 unsigned long lastSpeedDecay = 0;
 unsigned long lastLoop = 0;
 //interval between speed decays in ms
-const long speedDecayInterval = 128;
+const long speedDecayInterval = 200;
 const long loopInterval = 32;
 
 bool gameInitDone = false;
@@ -188,8 +189,10 @@ void update()
       {
         //Set flag that button is down
         buttonPlayer1IsDown = true;
-        player1Speed += 1;
-        player1RollingPower = 3;
+        player1Speed ++;
+
+        //Move button pressed so give some rolling power
+        if(player1RollingPower < 2) { player1RollingPower = 2; }
 
       }
       else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == true)
@@ -204,6 +207,9 @@ void update()
   if(player1Speed >= SPEED60PERCENT)
   {
     player1LogicPosition += 3;
+
+    if(player1RollingPower < 6) { player1RollingPower = 6; }
+
     if(player1LogicPosition > 299)
     {
       if(player1LogicPosition == 300) { player1LogicPosition = 0;}
@@ -214,6 +220,9 @@ void update()
   else if(player1Speed >= SPEED30PERCENT)
   {
     player1LogicPosition += 2;
+
+    if(player1RollingPower < 4) { player1RollingPower = 4; }
+
     if(player1LogicPosition > 299)
     {
       if(player1LogicPosition == 300) { player1LogicPosition = 0;}
@@ -224,6 +233,7 @@ void update()
   else if(player1Speed >= 1)
   {
     player1LogicPosition += 1;
+
     if(player1LogicPosition > 299)
     {
       if(player1LogicPosition == 300) { player1LogicPosition = 0;}
@@ -267,30 +277,34 @@ void update()
       lastSpeedDecay = millis();
       //Serial.println("SPEED DECAY");
     }
+  }
 
-    //if player gets to 0 speed but entity is marked as moving previously
-    if(player1RollingPower != 0)
+  //if player gets to 0 speed but entity is marked as moving previously
+  if(player1Speed == 0 && player1RollingPower != 0)
+  {
+    //forward rolling power
+    if(player1RollingPower > 0)
     {
-      //forward rolling power
-      if(player1RollingPower > 0)
+      Serial.println("PLAYER ROLLING POWER MORE THAN ZERO");
+      //skip every second speedcheck
+      if(player1RollNow == 0)
       {
-        Serial.println("PLAYER ROLLING POWER MORE THAN ZERO");
-        //skip every second speedcheck
-        if(player1RollNow < 10)
-        {
-          player1RollNow++;
-        }
-        else
-        {
-          //add some speed
-          player1Speed++;
+        player1RollNow = player1RollingPower;
+      }
+      else if(player1RollNow < 10)
+      {
+        player1RollNow++;
+      }
+      else
+      {
+        //add some speed
+        player1Speed++;
 
-          //decrease rolling power counter
-          player1RollingPower--;
+        //decrease rolling power counter
+        player1RollingPower--;
 
-          //prepare for next check
-          player1RollNow = 0;
-        }
+        //prepare for next check
+        player1RollNow = 0;
       }
     }
   }
