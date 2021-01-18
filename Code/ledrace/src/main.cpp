@@ -5,7 +5,8 @@
 #define PIN               2
 #define PLAYERONEBUTTONPIN   4
 #define NUMPIXELS         300
-#define MAX_SPEED 10
+#define MAX_SPEED 100
+
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
@@ -22,7 +23,9 @@ uint32_t player1ColorInteger = pixels.Color(player1ColorArrayRGB[0], player1Colo
 int player1Speed = 0;
 bool buttonPlayer1IsDown = false;
 
-
+const int SPEED30PERCENT = MAX_SPEED / 100 * 30;
+const int SPEED60PERCENT = MAX_SPEED / 100 * 60;
+const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 unsigned long lastSpeedDecay = 0;
 
 //interval between speed decays in ms
@@ -191,7 +194,7 @@ void update()
 
 
   //evaluate speed and update player position
-  if(player1Speed / 3 >= 2)
+  if(player1Speed >= SPEED60PERCENT)
   {
     player1LogicPosition += 3;
     if(player1LogicPosition > 299)
@@ -201,7 +204,7 @@ void update()
       else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
     }
   }
-  else if(player1Speed / 3 >= 1)
+  else if(player1Speed >= SPEED30PERCENT)
   {
     player1LogicPosition += 2;
     if(player1LogicPosition > 299)
@@ -227,7 +230,30 @@ void update()
     //only decay when more than 0
     if(player1Speed > 0)
     {
-      player1Speed--;
+      //standard decrease 10% (at least 1), 15% on 60% max speed, 25% on 90% max speed
+      if(player1Speed <= SPEED30PERCENT)
+      {
+        int speedDecrease = player1Speed / 100 * 10;
+
+        if(speedDecrease >= 1)
+        {
+          player1Speed -= speedDecrease;
+        }
+        else
+        {
+          player1Speed--;
+        }
+      }
+      else if(player1Speed <= SPEED60PERCENT)
+      {
+        int speedDecrease = player1Speed / 100 * 15;
+        player1Speed -= speedDecrease;
+      }
+      else if(player1Speed <= SPEED90PERCENT)
+      {
+        int speedDecrease = player1Speed / 100 * 25;
+        player1Speed -= speedDecrease;
+      }
       lastSpeedDecay = millis();
       //Serial.println("SPEED DECAY");
     }
