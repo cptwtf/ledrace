@@ -11,7 +11,8 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 
 //start/finish line
-int startFinishLine = 3;
+//dont put to close to strip beginning/end or write extended crossing logic :p
+int startFinishLine = 10;
 byte startFinishLineColorArrayRGB[] = {254,254,254};
 uint32_t startFinishLineColorInteger = pixels.Color(startFinishLineColorArrayRGB[0], startFinishLineColorArrayRGB[1], startFinishLineColorArrayRGB[2]);
 //startposition
@@ -25,6 +26,8 @@ int player1RollNow = 0;
 float player1DecelerationMultiplier = 1.0;
 bool buttonPlayer1IsDown = false;
 int player1LapCounter = 0;
+unsigned long player1LapTimesArray[10];
+bool player1Crossed = false;
 
 
 const int MAX_SPEED = 100;
@@ -260,6 +263,31 @@ void update()
     }
   }
 
+  //check for crossing finish line
+  if(player1LogicPosition >= startFinishLine && player1Crossed == false)
+  {
+    player1Crossed = true;
+    Serial.print("Lap #");
+    Serial.println(player1LapCounter);
+
+    player1LapTimesArray[player1LapCounter] = millis();
+
+    if(player1LapCounter > 0)
+    {
+      long laptimeMillis = player1LapTimesArray[player1LapCounter] - player1LapTimesArray[player1LapCounter - 1];
+      float laptimeSeconds = float(laptimeMillis) / 1000;
+      Serial.print("Lap Time #");
+      Serial.print(player1LapCounter);
+      Serial.print(": ");
+      Serial.println(laptimeSeconds);
+    }
+    player1LapCounter++;
+  }
+  else if(player1LogicPosition < startFinishLine && player1Crossed == true)
+  {
+    player1Crossed = false;
+  }
+
   //slowly loose speed stat
   if(millis() - lastSpeedDecay > speedDecayInterval)
   {
@@ -282,9 +310,9 @@ void update()
       }
       else if(player1Speed <= SPEED60PERCENT)
       {
-        Serial.println("ELSE IF SPEED60PERCENT");
+        //Serial.println("ELSE IF SPEED60PERCENT");
         int speedDecrease = player1Speed / (float)100 * 2 * player1DecelerationMultiplier;
-        Serial.println(speedDecrease);
+        //Serial.println(speedDecrease);
 
         player1Speed -= speedDecrease;
       }
@@ -309,7 +337,7 @@ void update()
     //forward rolling power
     if(player1RollingPower > 0)
     {
-      Serial.println("PLAYER ROLLING POWER MORE THAN ZERO");
+      //Serial.println("PLAYER ROLLING POWER MORE THAN ZERO");
       //skip every second speedcheck
       if(player1RollNow == 0)
       {
