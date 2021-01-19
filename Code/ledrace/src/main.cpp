@@ -24,6 +24,7 @@ int player1RollingPower = 0;
 int player1RollNow = 0;
 float player1DecelerationMultiplier = 1.0;
 bool buttonPlayer1IsDown = false;
+int player1LapCounter = 0;
 
 
 const int MAX_SPEED = 100;
@@ -180,8 +181,9 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
 void update()
 {
   //Serial.println("debug update");
-  Serial.print("update begin player1speed: ");
-  Serial.println(player1Speed);
+  //Serial.print("update player1speed: ");
+  //Serial.println(player1Speed);
+
   //If player can still gain speed
     if(player1Speed < MAX_SPEED)
     {
@@ -191,8 +193,7 @@ void update()
         buttonPlayer1IsDown = true;
         player1Speed ++;
 
-        //Move button pressed so give some rolling power
-        if(player1RollingPower < 2) { player1RollingPower = 2; }
+        //Reset deceleration multiplier if player uses button
         if(player1DecelerationMultiplier > 1) {player1DecelerationMultiplier = 1.0;}
       }
       else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == true)
@@ -210,7 +211,20 @@ void update()
 
 
   //evaluate speed and update player position
-  if(player1Speed >= SPEED60PERCENT)
+  if(player1Speed >= SPEED90PERCENT)
+  {
+    player1LogicPosition += 4;
+
+    if(player1RollingPower < 8) { player1RollingPower = 8; }
+
+    if(player1LogicPosition > 299)
+    {
+      if(player1LogicPosition == 300) { player1LogicPosition = 0;}
+      else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
+      else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
+    }
+  }
+  else if(player1Speed >= SPEED60PERCENT)
   {
     player1LogicPosition += 3;
 
@@ -240,6 +254,7 @@ void update()
   {
     player1LogicPosition += 1;
 
+    if(player1Speed > 5 && player1RollingPower < 2) { player1RollingPower = 2;}
     if(player1LogicPosition > 299)
     {
       if(player1LogicPosition == 300) { player1LogicPosition = 0;}
