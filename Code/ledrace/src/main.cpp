@@ -11,7 +11,8 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 
 //start/finish line
-int startFinishLine = 3;
+//dont put to close to strip beginning/end or write extended crossing logic :p
+int startFinishLine = 10;
 byte startFinishLineColorArrayRGB[] = {254,254,254};
 uint32_t startFinishLineColorInteger = pixels.Color(startFinishLineColorArrayRGB[0], startFinishLineColorArrayRGB[1], startFinishLineColorArrayRGB[2]);
 //startposition
@@ -24,12 +25,26 @@ int player1RollingPower = 0;
 int player1RollNow = 0;
 float player1DecelerationMultiplier = 1.0;
 bool buttonPlayer1IsDown = false;
+int player1LapCounter = 0;
+unsigned long player1LapTimesArray[10];
+bool player1Crossed = false;
+
+
 
 
 const int MAX_SPEED = 100;
 const int SPEED30PERCENT = MAX_SPEED / 100 * 30;
 const int SPEED60PERCENT = MAX_SPEED / 100 * 60;
 const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
+
+
+//"gravity" objects
+//[objectNumber]
+//            [start][topmost][end][intensity]
+
+int gravityObjects[2][4] = {{72,126,198,3},{10,15,20,2}};
+
+
 
 unsigned long lastSpeedDecay = 0;
 unsigned long lastLoop = 0;
@@ -73,6 +88,11 @@ void initGame()
     if(i % 6 == 0) { pixels.setPixelColor(i, pixels.Color(254,0,0)); }
   }
   pixels.setPixelColor(0, pixels.Color(0,0,0));
+
+  //draw "physics" test boundaries
+  pixels.setPixelColor(gravityObjects[0][0], pixels.Color(0,255,0));
+  pixels.setPixelColor(gravityObjects[0][1], pixels.Color(0,255,0));
+  pixels.setPixelColor(gravityObjects[0][2], pixels.Color(0,255,0));
 
   pixels.show();
   gameInitDone = true;
@@ -180,8 +200,9 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
 void update()
 {
   //Serial.println("debug update");
-  Serial.print("update begin player1speed: ");
-  Serial.println(player1Speed);
+  //Serial.print("update player1speed: ");
+  //Serial.println(player1Speed);
+
   //If player can still gain speed
     if(player1Speed < MAX_SPEED)
     {
@@ -189,10 +210,9 @@ void update()
       {
         //Set flag that button is down
         buttonPlayer1IsDown = true;
-        player1Speed ++;
+        player1Speed++;
 
-        //Move button pressed so give some rolling power
-        if(player1RollingPower < 2) { player1RollingPower = 2; }
+        //Reset deceleration multiplier if player uses button
         if(player1DecelerationMultiplier > 1) {player1DecelerationMultiplier = 1.0;}
       }
       else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == true)
@@ -205,12 +225,25 @@ void update()
         //should help with long "roll out" on high velocity
         player1DecelerationMultiplier += 0.3;
       }
-
     }
 
 
   //evaluate speed and update player position
-  if(player1Speed >= SPEED60PERCENT)
+  if(player1Speed >= SPEED90PERCENT)
+  {
+    player1LogicPosition += 4;
+
+    if(player1RollingPower < 8) { player1RollingPower = 8; }
+
+    if(player1LogicPosition > 299)
+    {
+      if(player1LogicPosition == 300) { player1LogicPosition = 0;}
+      else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
+      else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
+      else if(player1LogicPosition == 303) { player1LogicPosition = 3;}
+    }
+  }
+  else if(player1Speed >= SPEED60PERCENT)
   {
     player1LogicPosition += 3;
 
@@ -233,19 +266,45 @@ void update()
     {
       if(player1LogicPosition == 300) { player1LogicPosition = 0;}
       else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
-      else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
     }
   }
   else if(player1Speed >= 1)
   {
     player1LogicPosition += 1;
 
+    if(player1Speed > 5 && player1RollingPower < 2) { player1RollingPower = 2;}
     if(player1LogicPosition > 299)
     {
       if(player1LogicPosition == 300) { player1LogicPosition = 0;}
-      else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
-      else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
     }
+  }
+
+  //check for crossing finish line
+  if(player1LogicPosition >= startFinishLine && player1Crossed == false)
+  {
+    player1Crossed = true;
+    //Serial.print("Lap #");
+    //Serial.println(player1LapCounter);
+
+    player1LapTimesArray[player1LapCounter] = millis();
+
+    /*
+    if(player1LapCounter > 0)
+    {
+      long laptimeMillis = player1LapTimesArray[player1LapCounter] - player1LapTimesArray[player1LapCounter - 1];
+      float laptimeSeconds = float(laptimeMillis) / 1000;
+      Serial.print("Lap Time #");
+      Serial.print(player1LapCounter);
+      Serial.print(": ");
+      Serial.println(laptimeSeconds);
+    }
+    */
+
+    player1LapCounter++;
+  }
+  else if(player1LogicPosition < startFinishLine && player1Crossed == true)
+  {
+    player1Crossed = false;
   }
 
   //slowly loose speed stat
@@ -270,9 +329,9 @@ void update()
       }
       else if(player1Speed <= SPEED60PERCENT)
       {
-        Serial.println("ELSE IF SPEED60PERCENT");
+        //Serial.println("ELSE IF SPEED60PERCENT");
         int speedDecrease = player1Speed / (float)100 * 2 * player1DecelerationMultiplier;
-        Serial.println(speedDecrease);
+        //Serial.println(speedDecrease);
 
         player1Speed -= speedDecrease;
       }
@@ -281,18 +340,32 @@ void update()
         int speedDecrease = (float)player1Speed / 100 * 3  * player1DecelerationMultiplier;
         player1Speed -= speedDecrease;
       }
+      else if(player1Speed > SPEED90PERCENT)
+      {
+        int speedDecrease = (float)player1Speed / 100 * 4  * player1DecelerationMultiplier;
+        player1Speed -= speedDecrease;
+      }
+      ////////////////Gravity Objects\\\\\\\\\\\\\\\\
+      //if the player is between rise start point and highest point of the rise
+      if(player1LogicPosition >= gravityObjects[0][0] && player1LogicPosition <= gravityObjects[0][1])
+      {
+        int speedDecrease = (float)1 * gravityObjects[0][3] * player1DecelerationMultiplier;
+        player1Speed -= speedDecrease;
+      }
       lastSpeedDecay = millis();
       //Serial.println("SPEED DECAY");
     }
   }
 
+
+  ////////////////"Momentum"\\\\\\\\\\\\\\\\\\\\\\
   //if player gets to 0 speed but entity is marked as moving previously
   if(player1Speed == 0 && player1RollingPower != 0)
   {
     //forward rolling power
     if(player1RollingPower > 0)
     {
-      Serial.println("PLAYER ROLLING POWER MORE THAN ZERO");
+      //Serial.println("PLAYER ROLLING POWER MORE THAN ZERO");
       //skip every second speedcheck
       if(player1RollNow == 0)
       {
