@@ -30,10 +30,21 @@ unsigned long player1LapTimesArray[10];
 bool player1Crossed = false;
 
 
+
+
 const int MAX_SPEED = 100;
 const int SPEED30PERCENT = MAX_SPEED / 100 * 30;
 const int SPEED60PERCENT = MAX_SPEED / 100 * 60;
 const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
+
+
+//"gravity" objects
+//[objectNumber]
+//            [start][topmost][end][intensity]
+
+int gravityObjects[2][4] = {{72,126,198,3},{10,15,20,2}};
+
+
 
 unsigned long lastSpeedDecay = 0;
 unsigned long lastLoop = 0;
@@ -77,6 +88,11 @@ void initGame()
     if(i % 6 == 0) { pixels.setPixelColor(i, pixels.Color(254,0,0)); }
   }
   pixels.setPixelColor(0, pixels.Color(0,0,0));
+
+  //draw "physics" test boundaries
+  pixels.setPixelColor(gravityObjects[0][0], pixels.Color(0,255,0));
+  pixels.setPixelColor(gravityObjects[0][1], pixels.Color(0,255,0));
+  pixels.setPixelColor(gravityObjects[0][2], pixels.Color(0,255,0));
 
   pixels.show();
   gameInitDone = true;
@@ -194,7 +210,7 @@ void update()
       {
         //Set flag that button is down
         buttonPlayer1IsDown = true;
-        player1Speed ++;
+        player1Speed++;
 
         //Reset deceleration multiplier if player uses button
         if(player1DecelerationMultiplier > 1) {player1DecelerationMultiplier = 1.0;}
@@ -267,11 +283,12 @@ void update()
   if(player1LogicPosition >= startFinishLine && player1Crossed == false)
   {
     player1Crossed = true;
-    Serial.print("Lap #");
-    Serial.println(player1LapCounter);
+    //Serial.print("Lap #");
+    //Serial.println(player1LapCounter);
 
     player1LapTimesArray[player1LapCounter] = millis();
 
+    /*
     if(player1LapCounter > 0)
     {
       long laptimeMillis = player1LapTimesArray[player1LapCounter] - player1LapTimesArray[player1LapCounter - 1];
@@ -281,6 +298,8 @@ void update()
       Serial.print(": ");
       Serial.println(laptimeSeconds);
     }
+    */
+
     player1LapCounter++;
   }
   else if(player1LogicPosition < startFinishLine && player1Crossed == true)
@@ -326,11 +345,20 @@ void update()
         int speedDecrease = (float)player1Speed / 100 * 4  * player1DecelerationMultiplier;
         player1Speed -= speedDecrease;
       }
+      ////////////////Gravity Objects\\\\\\\\\\\\\\\\
+      //if the player is between rise start point and highest point of the rise
+      if(player1LogicPosition >= gravityObjects[0][0] && player1LogicPosition <= gravityObjects[0][1])
+      {
+        int speedDecrease = (float)1 * gravityObjects[0][3] * player1DecelerationMultiplier;
+        player1Speed -= speedDecrease;
+      }
       lastSpeedDecay = millis();
       //Serial.println("SPEED DECAY");
     }
   }
 
+
+  ////////////////"Momentum"\\\\\\\\\\\\\\\\\\\\\\
   //if player gets to 0 speed but entity is marked as moving previously
   if(player1Speed == 0 && player1RollingPower != 0)
   {
