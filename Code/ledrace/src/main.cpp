@@ -42,7 +42,7 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 //[objectNumber]
 //            [start][topmost][end][intensity]
 
-int gravityObjects[2][4] = {{72,126,198,3},{10,15,20,2}};
+int gravityObjects[2][4] = {{72,126,198,5},{10,15,20,2}};
 
 
 
@@ -219,11 +219,11 @@ void update()
       {
         buttonPlayer1IsDown = false;
       }
-      else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == false) //User stopped pressing the button
+      else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == false && player1DecelerationMultiplier < 6) //User stopped pressing the button
       {
         //add to deceleration multiplier so car gets slow quicker the longer user doesnt press the button
         //should help with long "roll out" on high velocity
-        player1DecelerationMultiplier += 0.3;
+        player1DecelerationMultiplier += 0.6;
       }
     }
 
@@ -330,7 +330,7 @@ void update()
       else if(player1Speed <= SPEED60PERCENT)
       {
         //Serial.println("ELSE IF SPEED60PERCENT");
-        int speedDecrease = player1Speed / (float)100 * 2 * player1DecelerationMultiplier;
+        int speedDecrease = (float)player1Speed / 100 * 2 * player1DecelerationMultiplier;
         //Serial.println(speedDecrease);
 
         player1Speed -= speedDecrease;
@@ -345,16 +345,19 @@ void update()
         int speedDecrease = (float)player1Speed / 100 * 4  * player1DecelerationMultiplier;
         player1Speed -= speedDecrease;
       }
-      ////////////////Gravity Objects\\\\\\\\\\\\\\\\
-      //if the player is between rise start point and highest point of the rise
-      if(player1LogicPosition >= gravityObjects[0][0] && player1LogicPosition <= gravityObjects[0][1])
-      {
-        int speedDecrease = (float)1 * gravityObjects[0][3] * player1DecelerationMultiplier;
-        player1Speed -= speedDecrease;
-      }
-      lastSpeedDecay = millis();
-      //Serial.println("SPEED DECAY");
     }
+    ////////////////Gravity Objects\\\\\\\\\\\\\\\\
+    //if the player is between rise start point and highest point of the rise
+    if(player1LogicPosition >= gravityObjects[0][0] && player1LogicPosition <= gravityObjects[0][1])
+    {
+      int speedDecrease = (float)0.1 * gravityObjects[0][3] * player1DecelerationMultiplier;
+      player1Speed -= speedDecrease;
+
+      Serial.print("gravity handling player1speed: ");
+      Serial.println(player1Speed);
+    }
+    lastSpeedDecay = millis();
+    //Serial.println("SPEED DECAY");
   }
 
 
