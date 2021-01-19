@@ -222,6 +222,7 @@ void update()
       if(player1LogicPosition == 300) { player1LogicPosition = 0;}
       else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
       else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
+      else if(player1LogicPosition == 303) { player1LogicPosition = 3;}
     }
   }
   else if(player1Speed >= SPEED60PERCENT)
@@ -247,7 +248,6 @@ void update()
     {
       if(player1LogicPosition == 300) { player1LogicPosition = 0;}
       else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
-      else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
     }
   }
   else if(player1Speed >= 1)
@@ -258,8 +258,6 @@ void update()
     if(player1LogicPosition > 299)
     {
       if(player1LogicPosition == 300) { player1LogicPosition = 0;}
-      else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
-      else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
     }
   }
 
