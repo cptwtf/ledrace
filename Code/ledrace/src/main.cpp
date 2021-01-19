@@ -109,19 +109,23 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
   while(playerDrawPositionLocal != playerLogicPosition)
   {
     //Serial.println(playerDrawPositionLocal);
-  //  Serial.println(playerLogicPosition);
-    //Serial.println("debug draw while");
+    //  Serial.println(playerLogicPosition);
+    //Strip End/Beginning handling
+    int sternmostPixel;
+    if(playerDrawPositionLocal == 0 ){ sternmostPixel = NUMPIXELS - 2; }
+    else if (playerDrawPositionLocal == 1 ){ sternmostPixel = NUMPIXELS - 1; }
+    else { sternmostPixel = playerDrawPositionLocal - 2; }
+    //Strip End/Beginning handling
+    int nextPixel;
+    if(playerDrawPositionLocal == NUMPIXELS - 1 ){ nextPixel = 0; }
+    else{ nextPixel = playerDrawPositionLocal + 1; }
+
     //if player logic position is in front of current drawn position
     if(playerDrawPositionLocal < playerLogicPosition ||
       (playerDrawPositionLocal == 299 && playerLogicPosition <= 3) ||
       (playerDrawPositionLocal == 298 && playerLogicPosition <= 3) ||
       (playerDrawPositionLocal == 297 && playerLogicPosition <= 3))
     {
-      //Strip End/Beginning handling
-      int sternmostPixel;
-      if(playerDrawPositionLocal == 0 ){ sternmostPixel = NUMPIXELS - 2; }
-      else if (playerDrawPositionLocal == 1 ){ sternmostPixel = NUMPIXELS - 1; }
-      else { sternmostPixel = playerDrawPositionLocal - 2; }
 
       //unset last entity pixel
       //if the pixel to unset has not the player entity color
@@ -149,10 +153,6 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
         pixels.setPixelColor(sternmostPixel, pixels.Color(0, 0, 0));
       }
 
-      //Strip End/Beginning handling
-      int nextPixel;
-      if(playerDrawPositionLocal == NUMPIXELS - 1 ){ nextPixel = 0; }
-      else{ nextPixel = playerDrawPositionLocal + 1; }
 
        //set next pixel
        //check if next pixel empty
@@ -190,6 +190,76 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
         //Serial.println("DRAW IS INCREMENTING PLAYERDRAWPOSITIONLOCAL");
          playerDrawPositionLocal++;
        }
+    } //if player entity has to be moved backwards
+    else if(playerDrawPositionLocal > playerLogicPosition ||
+            (playerDrawPositionLocal == 2 && playerLogicPosition >= 296) ||
+            (playerDrawPositionLocal == 1 && playerLogicPosition >= 296) ||
+            (playerDrawPositionLocal == 0 && playerLogicPosition >= 296)   )
+    {
+
+            //unset front entity pixel
+            //if the pixel to unset has not the player entity color
+            if(pixels.getPixelColor(nextPixel) != pixels.Color(playerColorArrayRGB[0], playerColorArrayRGB[1], playerColorArrayRGB[2]))
+            {
+              //get pixelcolor
+              uint32_t pixelColor = pixels.getPixelColor(nextPixel);
+
+              //convert to byte array rgb values
+              byte unmixedCol[3];
+              unmixedCol[2] = pixelColor;
+              unmixedCol[1] = pixelColor >> 8;
+              unmixedCol[0] = pixelColor >> 16;
+
+              //retract entity color
+              unmixedCol[0]= (unmixedCol[0] - (playerColorArrayRGB[0] / 2)) * 2;
+              unmixedCol[1]= (unmixedCol[1] - (playerColorArrayRGB[1] / 2)) * 2;
+              unmixedCol[2]= (unmixedCol[2] - (playerColorArrayRGB[2] / 2)) * 2;
+
+              //set "demerged" color
+              pixels.setPixelColor(nextPixel, pixels.Color(unmixedCol[0], unmixedCol[1], unmixedCol[2]));
+            }
+            else //if the pixel to unset has the same color as the player entity
+            {
+              pixels.setPixelColor(nextPixel, pixels.Color(0, 0, 0));
+            }
+
+
+             //set next pixel in opposite race direction
+             //check if next pixel empty
+             if(pixels.getPixelColor(sternmostPixel) == 0)
+             {
+               //set playercolor
+               pixels.setPixelColor(sternmostPixel, pixels.Color(playerColorArrayRGB[0], playerColorArrayRGB[1], playerColorArrayRGB[2]));
+             }
+             else //merge player color and pixel color if pixel already in use
+             {
+               //get pixelcolor
+               uint32_t pixelColor = pixels.getPixelColor(sternmostPixel);
+
+               //convert to byte array rgb values
+               byte mixedCol[3];
+               mixedCol[2] = pixelColor;
+               mixedCol[1] = pixelColor >> 8;
+               mixedCol[0] = pixelColor >> 16;
+
+               //merge colors
+               mixedCol[0] = (mixedCol[0] + playerColorArrayRGB[0]) / 2;
+            	 mixedCol[1] = (mixedCol[1] + playerColorArrayRGB[1]) / 2;
+               mixedCol[2] = (mixedCol[2] + playerColorArrayRGB[2]) / 2;
+
+               //set mixed color
+               pixels.setPixelColor(sternmostPixel, pixels.Color(mixedCol[0], mixedCol[1], mixedCol[2]));
+             }
+
+
+             pixels.show();
+             //update playerDrawPosition
+             if(playerDrawPositionLocal == 0) { playerDrawPositionLocal = 299; }
+             else
+             {
+              //Serial.println("DRAW IS DECREMENTING PLAYERDRAWPOSITIONLOCAL");
+               playerDrawPositionLocal--;
+             }
     }
     //remove this line for fancy bug :p
     player1DrawPosition = playerDrawPositionLocal;
