@@ -206,7 +206,6 @@ void update()
         //should help with long "roll out" on high velocity
         player1DecelerationMultiplier += 0.3;
       }
-
     }
 
 
@@ -292,6 +291,11 @@ void update()
       else if(player1Speed <= SPEED90PERCENT)
       {
         int speedDecrease = (float)player1Speed / 100 * 3  * player1DecelerationMultiplier;
+        player1Speed -= speedDecrease;
+      }
+      else if(player1Speed > SPEED90PERCENT)
+      {
+        int speedDecrease = (float)player1Speed / 100 * 4  * player1DecelerationMultiplier;
         player1Speed -= speedDecrease;
       }
       lastSpeedDecay = millis();
