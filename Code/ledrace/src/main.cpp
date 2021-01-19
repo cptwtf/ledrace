@@ -299,53 +299,115 @@ void update()
 
 
   //evaluate speed and update player position
-  if(player1Speed >= SPEED90PERCENT)
+  //checks if player moves and how strong in either direction
+  if(player1Speed >= SPEED90PERCENT || -(player1Speed) >= SPEED90PERCENT)
   {
-    player1LogicPosition += 4;
-
-    if(player1RollingPower < 8) { player1RollingPower = 8; }
-
-    if(player1LogicPosition > 299)
+    if(player1Speed > 0) //player moves forward
     {
-      if(player1LogicPosition == 300) { player1LogicPosition = 0;}
-      else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
-      else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
-      else if(player1LogicPosition == 303) { player1LogicPosition = 3;}
+      player1LogicPosition += 4;
+
+      if(player1RollingPower < 8) { player1RollingPower = 8; }
+
+      if(player1LogicPosition > 299)
+      {
+        if(player1LogicPosition == 300) { player1LogicPosition = 0;}
+        else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
+        else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
+        else if(player1LogicPosition == 303) { player1LogicPosition = 3;}
+      }
+    }
+    else //player moves backward
+    {
+      player1LogicPosition -= 4;
+
+      //if(player1RollingPower < 8) { player1RollingPower = 8; }
+
+      if(player1LogicPosition < 0)
+      {
+        if(player1LogicPosition == -1) { player1LogicPosition = 299;}
+        else if(player1LogicPosition == -2) { player1LogicPosition = 298;}
+        else if(player1LogicPosition == -3) { player1LogicPosition = 297;}
+        else if(player1LogicPosition == -4) { player1LogicPosition = 296;}
+      }
     }
   }
-  else if(player1Speed >= SPEED60PERCENT)
+  else if(player1Speed >= SPEED60PERCENT || -(player1Speed) >= SPEED60PERCENT)
   {
-    player1LogicPosition += 3;
-
-    if(player1RollingPower < 6) { player1RollingPower = 6; }
-
-    if(player1LogicPosition > 299)
+    if(player1Speed > 0)
     {
-      if(player1LogicPosition == 300) { player1LogicPosition = 0;}
-      else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
-      else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
+      player1LogicPosition += 3;
+
+      if(player1RollingPower < 6) { player1RollingPower = 6; }
+
+      if(player1LogicPosition > 299)
+      {
+        if(player1LogicPosition == 300) { player1LogicPosition = 0;}
+        else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
+        else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
+      }
+    }
+    else //player moves backward
+    {
+      player1LogicPosition -= 3;
+
+      //if(player1RollingPower < 6) { player1RollingPower = 6; }
+
+      if(player1LogicPosition < 0)
+      {
+        if(player1LogicPosition == -1) { player1LogicPosition = 299;}
+        else if(player1LogicPosition == -2) { player1LogicPosition = 298;}
+        else if(player1LogicPosition == -3) { player1LogicPosition = 297;}
+      }
     }
   }
-  else if(player1Speed >= SPEED30PERCENT)
+  else if(player1Speed >= SPEED30PERCENT || -(player1Speed) >= SPEED30PERCENT)
   {
-    player1LogicPosition += 2;
-
-    if(player1RollingPower < 4) { player1RollingPower = 4; }
-
-    if(player1LogicPosition > 299)
+    if(player1Speed > 0)
     {
-      if(player1LogicPosition == 300) { player1LogicPosition = 0;}
-      else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
+      player1LogicPosition += 2;
+
+      if(player1RollingPower < 4) { player1RollingPower = 4; }
+
+      if(player1LogicPosition > 299)
+      {
+        if(player1LogicPosition == 300) { player1LogicPosition = 0;}
+        else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
+      }
+    }
+    else //player moves backward
+    {
+      player1LogicPosition -= 2;
+
+      //if(player1RollingPower < 4) { player1RollingPower = 4; }
+
+      if(player1LogicPosition < 0)
+      {
+        if(player1LogicPosition == -1) { player1LogicPosition = 299;}
+        else if(player1LogicPosition == -2) { player1LogicPosition = 298;}
+      }
     }
   }
-  else if(player1Speed >= 1)
+  else if(player1Speed >= 1 || -(player1Speed) >= 1)
   {
-    player1LogicPosition += 1;
-
-    if(player1Speed > 5 && player1RollingPower < 2) { player1RollingPower = 2;}
-    if(player1LogicPosition > 299)
+    if(player1Speed > 0)
     {
-      if(player1LogicPosition == 300) { player1LogicPosition = 0;}
+      player1LogicPosition += 1;
+
+      if(player1Speed > 5 && player1RollingPower < 2) { player1RollingPower = 2;}
+      if(player1LogicPosition > 299)
+      {
+        if(player1LogicPosition == 300) { player1LogicPosition = 0;}
+      }
+    }
+    else //if player moving backwards
+    {
+      player1LogicPosition -= 1;
+
+      //if(player1Speed < 5 && player1RollingPower < 2) { player1RollingPower = 2;}
+      if(player1LogicPosition < 0)
+      {
+        if(player1LogicPosition == -1) { player1LogicPosition = 299;}
+      }
     }
   }
 
@@ -381,23 +443,37 @@ void update()
   if(millis() - lastSpeedDecay > speedDecayInterval)
   {
     //only decay when more than 0
-    if(player1Speed > 0)
+    if(player1Speed != 0)
     {
       //standard decrease 10% (at least 1), 15% on 60% max speed, 25% on 90% max speed
-      if(player1Speed <= SPEED30PERCENT)
+      if(player1Speed <= SPEED30PERCENT || -(player1Speed) <= SPEED30PERCENT)
       {
         int speedDecrease = player1Speed / (float)100 * 2 * player1DecelerationMultiplier;
 
-        if(speedDecrease > 1)
+        if(player1Speed > 0)
         {
-          player1Speed -= speedDecrease;
+          if(speedDecrease > 1)
+          {
+            player1Speed -= speedDecrease;
+          }
+          else
+          {
+            player1Speed--;
+          }
         }
         else
         {
-          player1Speed--;
+          if(speedDecrease < -1)
+          {
+            player1Speed -= speedDecrease;
+          }
+          else
+          {
+            player1Speed++;
+          }
         }
       }
-      else if(player1Speed <= SPEED60PERCENT)
+      else if(player1Speed <= SPEED60PERCENT  || -(player1Speed) <= SPEED60PERCENT)
       {
         //Serial.println("ELSE IF SPEED60PERCENT");
         int speedDecrease = (float)player1Speed / 100 * 2 * player1DecelerationMultiplier;
@@ -405,12 +481,12 @@ void update()
 
         player1Speed -= speedDecrease;
       }
-      else if(player1Speed <= SPEED90PERCENT)
+      else if(player1Speed <= SPEED90PERCENT  || -(player1Speed) <= SPEED90PERCENT)
       {
         int speedDecrease = (float)player1Speed / 100 * 3  * player1DecelerationMultiplier;
         player1Speed -= speedDecrease;
       }
-      else if(player1Speed > SPEED90PERCENT)
+      else if(player1Speed > SPEED90PERCENT  || -(player1Speed) > SPEED90PERCENT)
       {
         int speedDecrease = (float)player1Speed / 100 * 4  * player1DecelerationMultiplier;
         player1Speed -= speedDecrease;
