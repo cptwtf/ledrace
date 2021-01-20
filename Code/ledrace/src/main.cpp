@@ -42,7 +42,7 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 //[objectNumber]
 //            [start][topmost][end][intensity]
 
-int gravityObjects[2][4] = {{72,126,198,5},{10,15,20,2}};
+int gravityObjects[2][4] = {{72,126,198,10},{10,15,20,2}};
 
 
 
@@ -444,7 +444,7 @@ void update()
     //only decay when more than 0
     if(player1Speed != 0)
     {
-      //standard decrease 10% (at least 1), 15% on 60% max speed, 25% on 90% max speed
+      //standard decrease  (at least 1), decreasing faster on higher speeds
       if(player1Speed <= SPEED30PERCENT || -(player1Speed) <= SPEED30PERCENT)
       {
         int speedDecrease = player1Speed / (float)100 * 2 * player1DecelerationMultiplier;
@@ -492,11 +492,21 @@ void update()
       }
     }
     ////////////////Gravity Objects\\\\\\\\\\\\\\\\
-    //if the player is between rise start point and highest point of the rise
-    if(player1LogicPosition >= gravityObjects[0][0] && player1LogicPosition <= gravityObjects[0][1])
+    //decreases speed stat while going uphill and increases speed stat while going downhill
+    //not manipulating speed stat while exactly on top of the rise
+    //if the player is between rise start point and highest point of the rise (uphill)
+    if(player1LogicPosition >= gravityObjects[0][0] && player1LogicPosition < gravityObjects[0][1])
     {
       int speedDecrease = (float)0.1 * gravityObjects[0][3] * player1DecelerationMultiplier;
       player1Speed -= speedDecrease;
+
+      Serial.print("gravity handling player1speed: ");
+      Serial.println(player1Speed);
+    }//else if the player is between highest point and rise ending (downhill)
+    else if(player1LogicPosition > gravityObjects[0][1] && player1LogicPosition <= gravityObjects[0][2])
+    {
+      int speedIncrease = (float)0.1 * gravityObjects[0][3] * player1DecelerationMultiplier;
+      player1Speed += speedIncrease;
 
       Serial.print("gravity handling player1speed: ");
       Serial.println(player1Speed);
