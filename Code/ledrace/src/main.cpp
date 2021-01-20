@@ -322,7 +322,7 @@ void update()
     {
       player1LogicPosition -= 4;
 
-      //if(player1RollingPower < 8) { player1RollingPower = 8; }
+      if(player1RollingPower > -8) { player1RollingPower = -8; }
 
       if(player1LogicPosition < 0)
       {
@@ -352,7 +352,7 @@ void update()
     {
       player1LogicPosition -= 3;
 
-      //if(player1RollingPower < 6) { player1RollingPower = 6; }
+      if(player1RollingPower > -6) { player1RollingPower = -6; }
 
       if(player1LogicPosition < 0)
       {
@@ -380,7 +380,7 @@ void update()
     {
       player1LogicPosition -= 2;
 
-      //if(player1RollingPower < 4) { player1RollingPower = 4; }
+      if(player1RollingPower > -4) { player1RollingPower = -4; }
 
       if(player1LogicPosition < 0)
       {
@@ -405,7 +405,7 @@ void update()
     {
       player1LogicPosition -= 1;
 
-      //if(player1Speed < 5 && player1RollingPower < 2) { player1RollingPower = 2;}
+      if(player1Speed < -5 && player1RollingPower > -2) { player1RollingPower = -2;}
       if(player1LogicPosition < 0)
       {
         if(player1LogicPosition == -1) { player1LogicPosition = 299;}
@@ -528,8 +528,7 @@ void update()
     //forward rolling power
     if(player1RollingPower > 0)
     {
-      //Serial.println("PLAYER ROLLING POWER MORE THAN ZERO");
-      //skip every second speedcheck
+      //skip every x speedcheck
       if(player1RollNow == 0)
       {
         player1RollNow = player1RollingPower;
@@ -545,6 +544,29 @@ void update()
 
         //decrease rolling power counter
         player1RollingPower--;
+
+        //prepare for next check
+        player1RollNow = 0;
+      }
+    }
+    else //backward rolling power
+    {
+      //skip every x speedcheck
+      if(player1RollNow == 0)
+      {
+        player1RollNow = -(player1RollingPower);
+      }
+      else if(player1RollNow < 10)
+      {
+        player1RollNow++;
+      }
+      else
+      {
+        //add some negative speed
+        player1Speed--;
+
+        //decrease rolling power counter
+        player1RollingPower++;
 
         //prepare for next check
         player1RollNow = 0;
