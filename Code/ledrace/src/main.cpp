@@ -41,8 +41,8 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 //"gravity" objects
 //[objectNumber]
 //            [start][topmost][end][intensity]
-const int gravityObjectsCount = 2;
-int gravityObjects[gravityObjectsCount][4] = {{72,126,198,10},{20,25,30,5}};
+const int gravityObjectsCount = 5;
+int gravityObjects[gravityObjectsCount][4] = {{12,41,42,10},{42,43,69,5},{82,126,162,8}, {163,174,175,3}, {167, 168, 204, 6}};
 
 
 unsigned long lastSpeedDecay = 0;
@@ -291,7 +291,7 @@ void update()
       {
         buttonPlayer1IsDown = false;
       }
-      else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == false && player1DecelerationMultiplier < 6) //User stopped pressing the button
+      else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == false && player1DecelerationMultiplier < 10) //User stopped pressing the button
       {
         //add to deceleration multiplier so car gets slow quicker the longer user doesnt press the button
         //should help with long "roll out" on high velocity
