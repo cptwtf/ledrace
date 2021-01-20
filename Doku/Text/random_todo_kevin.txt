@@ -1,16 +1,18 @@
 dont forget!
 
 - fix draw logic when logicupdate +4 strip ending
-- cap negative speed
 - maybe reorder position logic conditions for efficiency
 - rolling power for backwards movement and fix forward rolling after backward movement
 - change magic numbers in position update logic to be derived from constant
 - speed decay formular rework
-- fix logic bug when crossing strip ending backwards
+- finish line cross effect
+- game end effect
 
 
 
 
 
 didnt forget :p
+- cap negative speed << DONE
 - fix color ghosting bug when moving backwards << DONE
+- fix logic bug when crossing strip ending backwards << DONE

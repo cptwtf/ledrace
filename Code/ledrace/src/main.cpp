@@ -41,7 +41,6 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 //"gravity" objects
 //[objectNumber]
 //            [start][topmost][end][intensity]
-
 const int gravityObjectsCount = 2;
 int gravityObjects[gravityObjectsCount][4] = {{72,126,198,10},{20,25,30,5}};
 
@@ -82,7 +81,7 @@ void initGame()
   pixels.setPixelColor(startFinishLine,
                         pixels.Color(startFinishLineColorArrayRGB[0], startFinishLineColorArrayRGB[1], startFinishLineColorArrayRGB[2]));
 
-  //draw color merge test NUMPIXELS
+  //draw color merge test
   for(int i = 0; i < NUMPIXELS; i++)
   {
     if(i % 6 == 0) { pixels.setPixelColor(i, pixels.Color(254,0,0)); }
@@ -122,7 +121,7 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
     if(playerDrawPositionLocal == NUMPIXELS - 1 ){ nextPixel = 0; }
     else{ nextPixel = playerDrawPositionLocal + 1; }
 
-    
+
     //if player logic position is in front of current drawn position
     if((playerDrawPositionLocal < playerLogicPosition && !(playerLogicPosition == 299 && playerDrawPositionLocal == 0)) ||
       (playerDrawPositionLocal == 299 && playerLogicPosition <= 3) ||
@@ -500,6 +499,10 @@ void update()
     //decreases speed stat while going uphill and increases speed stat while going downhill
     //not manipulating speed stat while exactly on top of the rise
     //if the player is between rise start point and highest point of the rise (uphill)
+
+    //if player doesnt have max speed (positiv or negative)
+    if(!(player1Speed >= MAX_SPEED) && !(-(player1Speed) >= MAX_SPEED))
+    //loop through gravity objects
     for(int i = gravityObjectsCount; i > 0; i--)
     {
       if(player1LogicPosition >= gravityObjects[i - 1][0] && player1LogicPosition < gravityObjects[i - 1][1])
@@ -507,20 +510,14 @@ void update()
         int speedDecrease = (float)0.1 * gravityObjects[i - 1][3] * player1DecelerationMultiplier;
         player1Speed -= speedDecrease;
 
-        Serial.print("gravity handling player1speed: ");
-        Serial.println(player1Speed);
       }//else if the player is between highest point and rise ending (downhill)
       else if(player1LogicPosition > gravityObjects[i - 1][1] && player1LogicPosition <= gravityObjects[i - 1][2])
       {
         int speedIncrease = (float)0.1 * gravityObjects[i - 1][3] * player1DecelerationMultiplier;
         player1Speed += speedIncrease;
-
-        Serial.print("gravity handling player1speed: ");
-        Serial.println(player1Speed);
       }
     }
     lastSpeedDecay = millis();
-    //Serial.println("SPEED DECAY");
   }
 
 
