@@ -90,9 +90,9 @@ void initGame()
   pixels.setPixelColor(0, pixels.Color(0,0,0));
 
   //draw "physics" test boundaries
-  pixels.setPixelColor(gravityObjects[0][0], pixels.Color(0,255,0));
-  pixels.setPixelColor(gravityObjects[0][1], pixels.Color(0,255,0));
-  pixels.setPixelColor(gravityObjects[0][2], pixels.Color(0,255,0));
+  pixels.setPixelColor(gravityObjects[0][0], pixels.Color(0,254,0));
+  pixels.setPixelColor(gravityObjects[0][1], pixels.Color(0,254,0));
+  pixels.setPixelColor(gravityObjects[0][2], pixels.Color(0,254,0));
 
   pixels.show();
   gameInitDone = true;
@@ -104,7 +104,6 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
 {
   //Serial.println("debug draw");
   int playerDrawPositionLocal = playerDrawPosition;
-  delay(20);
   //While player real location and player drawn location differ
   while(playerDrawPositionLocal != playerLogicPosition)
   {
@@ -199,10 +198,10 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
 
             //unset front entity pixel
             //if the pixel to unset has not the player entity color
-            if(pixels.getPixelColor(nextPixel) != pixels.Color(playerColorArrayRGB[0], playerColorArrayRGB[1], playerColorArrayRGB[2]))
+            if(pixels.getPixelColor(nextPixel - 1) != pixels.Color(playerColorArrayRGB[0], playerColorArrayRGB[1], playerColorArrayRGB[2]))
             {
               //get pixelcolor
-              uint32_t pixelColor = pixels.getPixelColor(nextPixel);
+              uint32_t pixelColor = pixels.getPixelColor(nextPixel - 1);
 
               //convert to byte array rgb values
               byte unmixedCol[3];
@@ -216,25 +215,25 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
               unmixedCol[2]= (unmixedCol[2] - (playerColorArrayRGB[2] / 2)) * 2;
 
               //set "demerged" color
-              pixels.setPixelColor(nextPixel, pixels.Color(unmixedCol[0], unmixedCol[1], unmixedCol[2]));
+              pixels.setPixelColor(nextPixel - 1, pixels.Color(unmixedCol[0], unmixedCol[1], unmixedCol[2]));
             }
             else //if the pixel to unset has the same color as the player entity
             {
-              pixels.setPixelColor(nextPixel, pixels.Color(0, 0, 0));
+              pixels.setPixelColor(nextPixel - 1, pixels.Color(0, 0, 0));
             }
 
 
              //set next pixel in opposite race direction
              //check if next pixel empty
-             if(pixels.getPixelColor(sternmostPixel) == 0)
+             if(pixels.getPixelColor(sternmostPixel - 1) == 0)
              {
                //set playercolor
-               pixels.setPixelColor(sternmostPixel, pixels.Color(playerColorArrayRGB[0], playerColorArrayRGB[1], playerColorArrayRGB[2]));
+               pixels.setPixelColor(sternmostPixel - 1, pixels.Color(playerColorArrayRGB[0], playerColorArrayRGB[1], playerColorArrayRGB[2]));
              }
              else //merge player color and pixel color if pixel already in use
              {
                //get pixelcolor
-               uint32_t pixelColor = pixels.getPixelColor(sternmostPixel);
+               uint32_t pixelColor = pixels.getPixelColor(sternmostPixel - 1);
 
                //convert to byte array rgb values
                byte mixedCol[3];
@@ -248,7 +247,7 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
                mixedCol[2] = (mixedCol[2] + playerColorArrayRGB[2]) / 2;
 
                //set mixed color
-               pixels.setPixelColor(sternmostPixel, pixels.Color(mixedCol[0], mixedCol[1], mixedCol[2]));
+               pixels.setPixelColor(sternmostPixel - 1, pixels.Color(mixedCol[0], mixedCol[1], mixedCol[2]));
              }
 
 
