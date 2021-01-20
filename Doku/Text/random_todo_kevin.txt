@@ -1,6 +1,6 @@
 dont forget!
 
-- fix draw logic when logicupdate +4
+- fix draw logic when logicupdate +4 strip ending
 - cap negative speed
 - maybe reorder position logic conditions for efficiency
 - rolling power for backwards movement and fix forward rolling after backward movement

@@ -43,7 +43,7 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 //            [start][topmost][end][intensity]
 
 const int gravityObjectsCount = 2;
-int gravityObjects[gravityObjectsCount][4] = {{72,126,198,10},{10,15,20,2}};
+int gravityObjects[gravityObjectsCount][4] = {{72,126,198,10},{20,25,30,5}};
 
 
 unsigned long lastSpeedDecay = 0;
@@ -90,9 +90,12 @@ void initGame()
   pixels.setPixelColor(0, pixels.Color(0,0,0));
 
   //draw "physics" test boundaries
-  pixels.setPixelColor(gravityObjects[0][0], pixels.Color(0,254,0));
-  pixels.setPixelColor(gravityObjects[0][1], pixels.Color(0,254,0));
-  pixels.setPixelColor(gravityObjects[0][2], pixels.Color(0,254,0));
+  for(int i = gravityObjectsCount; i > 0; i--)
+  {
+    pixels.setPixelColor(gravityObjects[i-1][0], pixels.Color(0,254,0));
+    pixels.setPixelColor(gravityObjects[i-1][1], pixels.Color(0,254,0));
+    pixels.setPixelColor(gravityObjects[i-1][2], pixels.Color(0,254,0));
+  }
 
   pixels.show();
   gameInitDone = true;
@@ -119,8 +122,9 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
     if(playerDrawPositionLocal == NUMPIXELS - 1 ){ nextPixel = 0; }
     else{ nextPixel = playerDrawPositionLocal + 1; }
 
+    
     //if player logic position is in front of current drawn position
-    if(playerDrawPositionLocal < playerLogicPosition ||
+    if((playerDrawPositionLocal < playerLogicPosition && !(playerLogicPosition == 299 && playerDrawPositionLocal == 0)) ||
       (playerDrawPositionLocal == 299 && playerLogicPosition <= 3) ||
       (playerDrawPositionLocal == 298 && playerLogicPosition <= 3) ||
       (playerDrawPositionLocal == 297 && playerLogicPosition <= 3))
