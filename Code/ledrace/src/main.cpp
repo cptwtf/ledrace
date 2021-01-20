@@ -42,8 +42,8 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 //[objectNumber]
 //            [start][topmost][end][intensity]
 
-int gravityObjects[2][4] = {{72,126,198,10},{10,15,20,2}};
-
+const int gravityObjectsCount = 2;
+int gravityObjects[gravityObjectsCount][4] = {{72,126,198,10},{10,15,20,2}};
 
 
 unsigned long lastSpeedDecay = 0;
@@ -491,25 +491,29 @@ void update()
         player1Speed -= speedDecrease;
       }
     }
+
     ////////////////Gravity Objects\\\\\\\\\\\\\\\\
     //decreases speed stat while going uphill and increases speed stat while going downhill
     //not manipulating speed stat while exactly on top of the rise
     //if the player is between rise start point and highest point of the rise (uphill)
-    if(player1LogicPosition >= gravityObjects[0][0] && player1LogicPosition < gravityObjects[0][1])
+    for(int i = gravityObjectsCount; i > 0; i--)
     {
-      int speedDecrease = (float)0.1 * gravityObjects[0][3] * player1DecelerationMultiplier;
-      player1Speed -= speedDecrease;
+      if(player1LogicPosition >= gravityObjects[i - 1][0] && player1LogicPosition < gravityObjects[i - 1][1])
+      {
+        int speedDecrease = (float)0.1 * gravityObjects[i - 1][3] * player1DecelerationMultiplier;
+        player1Speed -= speedDecrease;
 
-      Serial.print("gravity handling player1speed: ");
-      Serial.println(player1Speed);
-    }//else if the player is between highest point and rise ending (downhill)
-    else if(player1LogicPosition > gravityObjects[0][1] && player1LogicPosition <= gravityObjects[0][2])
-    {
-      int speedIncrease = (float)0.1 * gravityObjects[0][3] * player1DecelerationMultiplier;
-      player1Speed += speedIncrease;
+        Serial.print("gravity handling player1speed: ");
+        Serial.println(player1Speed);
+      }//else if the player is between highest point and rise ending (downhill)
+      else if(player1LogicPosition > gravityObjects[i - 1][1] && player1LogicPosition <= gravityObjects[i - 1][2])
+      {
+        int speedIncrease = (float)0.1 * gravityObjects[i - 1][3] * player1DecelerationMultiplier;
+        player1Speed += speedIncrease;
 
-      Serial.print("gravity handling player1speed: ");
-      Serial.println(player1Speed);
+        Serial.print("gravity handling player1speed: ");
+        Serial.println(player1Speed);
+      }
     }
     lastSpeedDecay = millis();
     //Serial.println("SPEED DECAY");
