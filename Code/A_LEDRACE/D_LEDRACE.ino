@@ -1,3 +1,4 @@
+
 void display1setup(){
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.clearDisplay();
@@ -11,6 +12,12 @@ void display2setup(){
   display2.drawBitmap(0,0, pixelartbztg, 128, 64, 1);
   display2.display();
   }
+
+void display12idle(){
+  display2.clearDisplay();
+  display2.drawBitmap(0,0, wartenart1, 128, 64, 1);
+  display2.display();
+}
 
 void display1menue(){
    while(m == 1 && w == 1 || m < 1 && w == 1 || m == 6 && w == 1 || m > 6 && w == 1)//start
@@ -26,7 +33,6 @@ void display1menue(){
   resetcount();
   abfrage();
 }
-
 
  while(m == 2 && w == 1)//multispieler 
   {
@@ -152,5 +158,5 @@ while(m == 5 && w == 1)//infos
   display.drawBitmap(0,0, infoart3, 128, 64, 1);
   display.display();
   abfrage3();
-  }
+}
 }

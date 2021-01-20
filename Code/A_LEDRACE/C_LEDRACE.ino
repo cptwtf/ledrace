@@ -10,9 +10,15 @@ void setup() {
   pixels.begin();
   m = 1;
   w = 1;
-
 }
 
 void loop() {
-  display1menue();
+ if (gamestate = false){
+      player1screen();
+      player2screen();
+ }else{
+      display12idle();
+      display1menue();
+ }
+  
 }
