@@ -1,72 +1,31 @@
-
-void resetcount(){
-  if(m > 6) { m = 1;}
-  if(m < 1) { m = 6;}
-  if(s != 1) { s = 1;}
+void player1screen(){
+  display.setCursor(1,1);
+  display.setTextColor(0xFFFF);
+  display.write("Geschwindigkeit = ",g);
+  display.setCursor(128,1);
+  display.setTextColor(0xFFFF);
+  display.write("Runde = ",r);
+  display.setCursor(1,32);
+  display.setTextColor(0xFFFF);
+  display.write("Rundenzeit = ",rz);
+  display.setCursor(128,32);
+  display.setTextColor(0xFFFF);
+  display.write("Geschwindigkeit = ",g);
+  display.display();
   }
   
-void Read()
-{
-  a = digitalRead(19);
-  b = digitalRead(18);
-  c = digitalRead(5);
-  //  d = digitalRead(3);
-  //  e = digitalRead(4);
-  //  f = digitalRead(5);
-}
-
-void abfrage()
-{
-  Read();
-  if      (a == 1) {
-    m = m + 1;
+void player2screen(){
+  display2.setCursor(1,1);
+  display2.setTextColor(0xFFFF);
+  display2.write("Geschwindigkeit = ",g);
+  display2.setCursor(128,1);
+  display2.setTextColor(0xFFFF);
+  display2.write("Runde = ",r);
+  display2.setCursor(1,32);
+  display2.setTextColor(0xFFFF);
+  display2.write("Rundenzeit = ",rz);
+  display2.setCursor(128,32);
+  display2.setTextColor(0xFFFF);
+  display2.write("Geschwindigkeit = ",g);
+  display2.display();
   }
-  else if (b == 1) {
-    m = m - 1;
-  }
-  else if (c == 1) {
-    w = w + 1;
-  }
-  Serial.println(m);
-  Serial.println(s);
-}
-
-void abfrage2()
-{
-  Read();
-  if (a == 1) {
-    s = 0;
-  }
-  Read();
-  if (b == 1) {
-    s = 1;
-  }
-  Read();
-  if (c == 1 && s == 1) {
-    w = w + 1;
-  }
-  Read();
-  if (c == 1 && s == 0) {
-    w = w - 1;
-  }
-  Serial.println(m);
-  Serial.println(s);
-}
-
-void abfrage3()
-{
-  Read();
-  if (a == 1) {
-    s = 0;
-  }
-  Read();
-  if (b == 1) {
-    s = 1;
-  }
-  Read();
-  if (c == 1 && s == 0) {
-    w = w - 1;
-  }
-  Serial.println(m);
-  Serial.println(s);
-}
