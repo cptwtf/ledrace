@@ -22,14 +22,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 Adafruit_SSD1306 display2(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 
-int g = 100;
-int r = 11;
-int rz = 5;
-int g2 = 200;
-int r2 = 21;
-int rz2 = 15;
-byte m ;
-byte w ;
-bool s = 1;
-bool gamestate = false;
-int a; int b; int c; int d; int e; 
+int g = 100; int r = 11; int rz = 5; int g2 = 200; int r2 = 21; int rz2 = 15; //Spielermenüdaten
+byte n ; byte m ; byte w ; bool s = 1;// menüstatevariablen
+bool gamestate = false; // gamestatus
+int a; int b; int c; int d; int e; //buttons
