@@ -26,7 +26,7 @@ bool buttonPlayer1IsDown = false;
 int player1LapCounter = 0;
 unsigned long player1LapTimesArray[10];
 bool player1Crossed = false;
-
+bool skipSpeedDecayOnce = false;
 
 
 
@@ -79,8 +79,8 @@ void initGame()
   pixels.setPixelColor(startFinishLine,
                         pixels.Color(startFinishLineColorArrayRGB[0], startFinishLineColorArrayRGB[1], startFinishLineColorArrayRGB[2]));
 
-  //draw color merge test
-  for(int i = 0; i < NUMPIXELS; i++)
+  //draw color merge test //DEACTIVATED
+  for(int i = NUMPIXELS; i < NUMPIXELS; i++)
   {
     if(i % 6 == 0) { pixels.setPixelColor(i, pixels.Color(254,0,0)); }
   }
@@ -299,39 +299,6 @@ void update()
       }
     }
 
-
-
-  //slowly loose speed stat
-  if(millis() - lastSpeedDecay > speedDecayInterval)
-  {
-
-    if (player1Speed >= 1)
-    {
-      float speedDecrease = (float)player1Speed * player1Speed *  0.00004 + 0.15;
-
-      speedDecrease = speedDecrease * player1DecelerationMultiplier;
-
-      player1Speed -= speedDecrease;
-      Serial.print("speed decay player1speed: ");
-      Serial.println(player1Speed);
-    }
-    else if(player1Speed <= -1)
-    {
-      float speedDecrease = (float)player1Speed * player1Speed *  0.00004 + 0.15;
-
-      speedDecrease = speedDecrease * player1DecelerationMultiplier;
-
-      player1Speed -= -(speedDecrease);
-
-      Serial.print("speed decay player1speed: ");
-      Serial.println(player1Speed);
-    }
-    else
-    {
-      player1Speed = 0.4;
-    }
-
-
     //evaluate speed and update player position
     //checks if player moves and how strong in either direction
     if(player1Speed >= SPEED90PERCENT || -(player1Speed) >= SPEED90PERCENT)
@@ -411,7 +378,7 @@ void update()
         }
       }
     }
-    else if(player1Speed >= 1.2 || -(player1Speed) >= 1.2)
+    else if(player1Speed >= 1 || -(player1Speed) >= 1)
     {
       if(player1Speed > 0)
       {
@@ -432,6 +399,43 @@ void update()
         }
       }
     }
+
+
+  //slowly loose speed stat
+  if(millis() - lastSpeedDecay > speedDecayInterval && !skipSpeedDecayOnce)
+  {
+
+    if (player1Speed >= 1)
+    {
+      float speedDecrease = (float)player1Speed * player1Speed *  0.00004 + 0.15;
+
+      speedDecrease = speedDecrease * player1DecelerationMultiplier;
+
+      player1Speed -= speedDecrease;
+      Serial.print("speed decay player1speed: ");
+      Serial.println(player1Speed);
+    }
+    else if(player1Speed <= -1)
+    {
+      float speedDecrease = (float)player1Speed * player1Speed *  0.00004 + 0.15;
+
+      speedDecrease = speedDecrease * player1DecelerationMultiplier;
+
+      player1Speed -= -(speedDecrease);
+
+      Serial.print("speed decay player1speed: ");
+      Serial.println(player1Speed);
+    }
+    else
+    {
+    //  if(player1Speed > 0) {player1Speed = 0.4;}
+    //else{player1Speed = -0.4;}
+    }
+    lastSpeedDecay = millis();
+  }
+  if(skipSpeedDecayOnce){skipSpeedDecayOnce = false;}
+
+
 
     //check for crossing finish line
     if(player1LogicPosition >= startFinishLine && player1Crossed == false)
@@ -461,30 +465,57 @@ void update()
       player1Crossed = false;
     }
 
-    ////////////////Gravity Objects\\\\\\\\\\\\\\\\
+    /*//////////////Gravity Objects\\\\\\\\\\\\\\\\
     //decreases speed stat while going uphill and increases speed stat while going downhill
     //not manipulating speed stat while exactly on top of the rise
-    //if the player is between rise start point and highest point of the rise (uphill)
+    //if the player is between rise start point and highest point of the rise (uphill)*/
 
     //if player doesnt have max speed (positiv or negative)
-    if(!(player1Speed >= MAX_SPEED) && !(-(player1Speed) >= MAX_SPEED) && false == true)
-    //loop through gravity objects
-    for(int i = gravityObjectsCount; i > 0; i--)
+    if(!(player1Speed >= MAX_SPEED) && !(-(player1Speed) >= MAX_SPEED))
     {
-      if(player1LogicPosition >= gravityObjects[i - 1][0] && player1LogicPosition < gravityObjects[i - 1][1])
+      //loop through gravity objects
+      for(int i = gravityObjectsCount; i > 0; i--)
       {
-        int speedDecrease = (float)0.1 * gravityObjects[i - 1][3];
-        player1Speed -= speedDecrease;
+        if(player1LogicPosition >= gravityObjects[i - 1][0] && player1LogicPosition < gravityObjects[i - 1][1])
+        {
+          float speedDecrease = (float)0.05 * gravityObjects[i - 1][3];
 
-      }//else if the player is between highest point and rise ending (downhill)
-      else if(player1LogicPosition > gravityObjects[i - 1][1] && player1LogicPosition <= gravityObjects[i - 1][2])
-      {
-        int speedIncrease = (float)0.1 * gravityObjects[i - 1][3];
-        player1Speed += speedIncrease;
+        //  Serial.print("gravity objects decreasing speed by");
+        //  Serial.println(speedDecrease);
+
+          player1Speed -= speedDecrease;
+
+          if(player1Speed < 0 && player1Speed > -1.0){player1Speed = -1;}
+          if(player1DecelerationMultiplier > 1) {player1DecelerationMultiplier = 1.0;}
+
+          skipSpeedDecayOnce = true;
+
+       //    Serial.print("new speed");
+      //    Serial.println(player1Speed);
+
+        }//else if the player is between highest point and rise ending (downhill)
+        else if(player1LogicPosition > gravityObjects[i - 1][1] && player1LogicPosition <= gravityObjects[i - 1][2])
+        {
+          float speedIncrease = (float)0.05 * gravityObjects[i - 1][3];
+
+        //  Serial.print("gravity objects increasing speed by");
+        //  Serial.println(speedIncrease);
+
+
+          player1Speed += speedIncrease;
+
+          if(player1Speed > 0 && player1Speed < 1.0){player1Speed = 1;}
+          if(player1DecelerationMultiplier > 1) {player1DecelerationMultiplier = 1.0;}
+
+          skipSpeedDecayOnce = true;
+
+        //  Serial.print("new speed ");
+        //  Serial.println(player1Speed);
+        }
       }
     }
-    lastSpeedDecay = millis();
-  }
+
+
 
 
 
