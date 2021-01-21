@@ -13,7 +13,7 @@ void setup() {
 }
 
 void loop() {
- if (gamestate = false){
+ if (gamestate == true){
       player1screen();
       player2screen();
  }else{

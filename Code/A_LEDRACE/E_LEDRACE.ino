@@ -1,31 +1,74 @@
 void player1screen(){
-  display.setCursor(1,1);
-  display.setTextColor(0xFFFF);
-  display.write("Geschwindigkeit = ",g);
-  display.setCursor(128,1);
-  display.setTextColor(0xFFFF);
-  display.write("Runde = ",r);
-  display.setCursor(1,32);
-  display.setTextColor(0xFFFF);
-  display.write("Rundenzeit = ",rz);
-  display.setCursor(128,32);
-  display.setTextColor(0xFFFF);
-  display.write("Geschwindigkeit = ",g);
+  display.clearDisplay();
+  display.setFont();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  int x = 1; int y = 1;
+  display.setCursor(x,y);
+  display.print("Geschwindigkeit");
+  x = 100; y = 1;
+  display.setCursor(x,y);
+  display.print("=");
+  x = 110; y = 1;
+  display.setCursor(x,y);
+  display.print(g);
+  
+  x = 1; y = 10;
+  display.setCursor(x,y);
+  display.print("Runde");
+  x = 100; y = 10;
+  display.setCursor(x,y);
+  display.print("=");
+  x = 110; y = 10;
+  display.setCursor(x,y);
+  display.print(r);
+  
+  x = 1; y = 19;
+  display.setCursor(x,y);
+  display.print("Rundenzeit");
+  x = 100; y = 19;
+  display.setCursor(x,y);
+  display.print("=");
+  x = 110; y = 19;
+  display.setCursor(x,y);
+  display.print(rz);
   display.display();
+
   }
   
 void player2screen(){
-  display2.setCursor(1,1);
-  display2.setTextColor(0xFFFF);
-  display2.write("Geschwindigkeit = ",g);
-  display2.setCursor(128,1);
-  display2.setTextColor(0xFFFF);
-  display2.write("Runde = ",r);
-  display2.setCursor(1,32);
-  display2.setTextColor(0xFFFF);
-  display2.write("Rundenzeit = ",rz);
-  display2.setCursor(128,32);
-  display2.setTextColor(0xFFFF);
-  display2.write("Geschwindigkeit = ",g);
+  display2.clearDisplay();
+  display2.setFont();
+  display2.setTextSize(1);
+  display2.setTextColor(WHITE);
+  int x = 1; int y = 1;
+  display2.setCursor(x,y);
+  display2.print("Geschwindigkeit");
+  x = 100; y = 1;
+  display2.setCursor(x,y);
+  display2.print("=");
+  x = 110; y = 1;
+  display2.setCursor(x,y);
+  display2.print(g2);
+  
+  x = 1; y = 10;
+  display2.setCursor(x,y);
+  display2.print("Runde");
+  x = 100; y = 10;
+  display2.setCursor(x,y);
+  display2.print("=");
+  x = 110; y = 10;
+  display2.setCursor(x,y);
+  display2.print(r2);
+  
+  x = 1; y = 19;
+  display2.setCursor(x,y);
+  display2.print("Rundenzeit");
+  x = 100; y = 19;
+  display2.setCursor(x,y);
+  display2.print("=");
+  x = 110; y = 19;
+  display2.setCursor(x,y);
+  display2.print(rz2);
   display2.display();
   }
