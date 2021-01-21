@@ -307,24 +307,24 @@ void update()
 
     if (player1Speed >= 1)
     {
-      float speedDecrease = (float)player1Speed * player1Speed *  0.00002 + 0.1;
+      float speedDecrease = (float)player1Speed * player1Speed *  0.00004 + 0.15;
 
       speedDecrease = speedDecrease * player1DecelerationMultiplier;
 
       player1Speed -= speedDecrease;
-    //  Serial.print("speed decay player1speed: ");
-    //  Serial.println(player1Speed);
+      Serial.print("speed decay player1speed: ");
+      Serial.println(player1Speed);
     }
     else if(player1Speed <= -1)
     {
-      float speedDecrease = (float)player1Speed * player1Speed *  0.00002 + 0.1;
+      float speedDecrease = (float)player1Speed * player1Speed *  0.00004 + 0.15;
 
       speedDecrease = speedDecrease * player1DecelerationMultiplier;
 
       player1Speed -= -(speedDecrease);
 
-    //  Serial.print("speed decay player1speed: ");
-    //  Serial.println(player1Speed);
+      Serial.print("speed decay player1speed: ");
+      Serial.println(player1Speed);
     }
     else
     {
@@ -366,8 +366,6 @@ void update()
       if(player1Speed > 0)
       {
         player1LogicPosition += 3;
-
-        if(player1RollingPower < 6) { player1RollingPower = 6; }
 
         if(player1LogicPosition > 299)
         {
