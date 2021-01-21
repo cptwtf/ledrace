@@ -22,18 +22,6 @@ int playerCount = 1;
 
 
 
-//startposition
-int player1LogicPosition = startFinishLine - 1;
-int player1DrawPosition = player1LogicPosition;
-byte player1ColorArrayRGB[] = {0,0,254};
-uint32_t player1ColorInteger = pixels.Color(player1ColorArrayRGB[0], player1ColorArrayRGB[1], player1ColorArrayRGB[2]);
-float player1Speed = 0.0;
-float player1DecelerationMultiplier = 1.0;
-bool buttonPlayer1IsDown = false;
-int player1LapCounter = 0;
-unsigned long player1LapTimesArray[10];
-bool player1Crossed = false;
-bool skipSpeedDecayOnce = false;
 
 class Player {
   public:
@@ -48,6 +36,8 @@ class Player {
     int LapCounter = 0;
     unsigned long LapTimesArray[10];
     bool crossedLine = false;
+    unsigned long lastSpeedDecay = 0;
+    bool skipSpeedDecayOnce = false;
 
     void setColor(int R, int G, int B)
     {
@@ -73,7 +63,7 @@ const int gravityObjectsCount = 5;
 int gravityObjects[gravityObjectsCount][4] = {{12,41,42,10},{42,43,69,5},{82,126,162,8}, {163,174,175,3}, {167, 168, 204, 6}};
 
 
-unsigned long lastSpeedDecay = 0;
+
 unsigned long lastLoop = 0;
 //interval between speed decays in ms
 const long speedDecayInterval = 32;
@@ -102,6 +92,7 @@ void initGame()
     //create player object and put in array
     Player player1;
     player1.setColor(0, 0, 254);
+    player1.buttonPin = PLAYERONEBUTTONPIN;
     playerInstances[0] = player1;
 
   }
@@ -154,10 +145,17 @@ void initGame()
 
 
 //Draw players
-void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArrayRGB[])
+//void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArrayRGB[])
+void draw(Player &player)
 {
   //Serial.println("debug draw");
-  int playerDrawPositionLocal = playerDrawPosition;
+  int playerDrawPositionLocal = player.DrawPosition;
+  int playerLogicPosition = player.LogicPosition;
+  byte playerColorArrayRGB[3];
+  playerColorArrayRGB[0] = player.ColorArrayRGB[0];
+  playerColorArrayRGB[1] = player.ColorArrayRGB[1];
+  playerColorArrayRGB[2] = player.ColorArrayRGB[2];
+
   //While player real location and player drawn location differ
   while(playerDrawPositionLocal != playerLogicPosition)
   {
@@ -316,207 +314,208 @@ void draw(int playerDrawPosition, int playerLogicPosition, byte playerColorArray
              }
     }
     //remove this line for fancy bug :p
-    player1DrawPosition = playerDrawPositionLocal;
+    player.DrawPosition = playerDrawPositionLocal;
   }
 }
 
 
-void update()
+void update(Player &player)
 {
   //Serial.println("debug update");
   //Serial.print("update player1speed: ");
   //Serial.println(player1Speed);
 
   //If player can still gain speed
-    if(player1Speed < MAX_SPEED)
+    if(player.Speed < MAX_SPEED)
     {
-      if( digitalRead(PLAYERONEBUTTONPIN) == 1 && buttonPlayer1IsDown == false)
+      if( digitalRead(player.buttonPin) == 1 && player.buttonIsDown == false)
       {
         //Set flag that button is down
-        buttonPlayer1IsDown = true;
-        player1Speed++;
+        player.buttonIsDown = true;
+        player.Speed++;
+        // Just for debugging: player.LogicPosition++;
 
         //Reset deceleration multiplier if player uses button
-        if(player1DecelerationMultiplier > 1) {player1DecelerationMultiplier = 1.0;}
+        if(player.DecelerationMultiplier > 1) {player.DecelerationMultiplier = 1.0;}
       }
-      else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == true)
+      else if(digitalRead(player.buttonPin) == 0 && player.buttonIsDown == true)
       {
-        buttonPlayer1IsDown = false;
+        player.buttonIsDown = false;
       }
-      else if(digitalRead(PLAYERONEBUTTONPIN) == 0 && buttonPlayer1IsDown == false && player1DecelerationMultiplier < 10) //User stopped pressing the button
+      else if(digitalRead(player.buttonPin) == 0 && player.buttonIsDown == false && player.DecelerationMultiplier < 10) //User stopped pressing the button
       {
         //add to deceleration multiplier so car gets slow quicker the longer user doesnt press the button
         //should help with long "roll out" on high velocity
-        player1DecelerationMultiplier += 0.25;
+        player.DecelerationMultiplier += 0.25;
         //Serial.print("decel: ");
-        //Serial.println(player1DecelerationMultiplier);
+        //Serial.println(player.DecelerationMultiplier);
       }
     }
 
     //evaluate speed and update player position
     //checks if player moves and how strong in either direction
-    if(player1Speed >= SPEED90PERCENT || -(player1Speed) >= SPEED90PERCENT)
+    if(player.Speed >= SPEED90PERCENT || -(player.Speed) >= SPEED90PERCENT)
     {
-      if(player1Speed > 0) //player moves forward
+      if(player.Speed > 0) //player moves forward
       {
-        player1LogicPosition += 4;
+        player.LogicPosition += 4;
 
-        if(player1LogicPosition > 299)
+        if(player.LogicPosition > 299)
         {
-          if(player1LogicPosition == 300) { player1LogicPosition = 0;}
-          else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
-          else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
-          else if(player1LogicPosition == 303) { player1LogicPosition = 3;}
+          if(player.LogicPosition == 300) { player.LogicPosition = 0;}
+          else if(player.LogicPosition == 301) { player.LogicPosition = 1;}
+          else if(player.LogicPosition == 302) { player.LogicPosition = 2;}
+          else if(player.LogicPosition == 303) { player.LogicPosition = 3;}
         }
       }
       else //player moves backward
       {
-        player1LogicPosition -= 4;
+        player.LogicPosition -= 4;
 
-        if(player1LogicPosition < 0)
+        if(player.LogicPosition < 0)
         {
-          if(player1LogicPosition == -1) { player1LogicPosition = 299;}
-          else if(player1LogicPosition == -2) { player1LogicPosition = 298;}
-          else if(player1LogicPosition == -3) { player1LogicPosition = 297;}
-          else if(player1LogicPosition == -4) { player1LogicPosition = 296;}
+          if(player.LogicPosition == -1) { player.LogicPosition = 299;}
+          else if(player.LogicPosition == -2) { player.LogicPosition = 298;}
+          else if(player.LogicPosition == -3) { player.LogicPosition = 297;}
+          else if(player.LogicPosition == -4) { player.LogicPosition = 296;}
         }
       }
     }
-    else if(player1Speed >= SPEED60PERCENT || -(player1Speed) >= SPEED60PERCENT)
+    else if(player.Speed >= SPEED60PERCENT || -(player.Speed) >= SPEED60PERCENT)
     {
-      if(player1Speed > 0)
+      if(player.Speed > 0)
       {
-        player1LogicPosition += 3;
+        player.LogicPosition += 3;
 
-        if(player1LogicPosition > 299)
+        if(player.LogicPosition > 299)
         {
-          if(player1LogicPosition == 300) { player1LogicPosition = 0;}
-          else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
-          else if(player1LogicPosition == 302) { player1LogicPosition = 2;}
+          if(player.LogicPosition == 300) { player.LogicPosition = 0;}
+          else if(player.LogicPosition == 301) { player.LogicPosition = 1;}
+          else if(player.LogicPosition == 302) { player.LogicPosition = 2;}
         }
       }
       else //player moves backward
       {
-        player1LogicPosition -= 3;
+        player.LogicPosition -= 3;
 
 
-        if(player1LogicPosition < 0)
+        if(player.LogicPosition < 0)
         {
-          if(player1LogicPosition == -1) { player1LogicPosition = 299;}
-          else if(player1LogicPosition == -2) { player1LogicPosition = 298;}
-          else if(player1LogicPosition == -3) { player1LogicPosition = 297;}
+          if(player.LogicPosition == -1) { player.LogicPosition = 299;}
+          else if(player.LogicPosition == -2) { player.LogicPosition = 298;}
+          else if(player.LogicPosition == -3) { player.LogicPosition = 297;}
         }
       }
     }
-    else if(player1Speed >= SPEED30PERCENT || -(player1Speed) >= SPEED30PERCENT)
+    else if(player.Speed >= SPEED30PERCENT || -(player.Speed) >= SPEED30PERCENT)
     {
-      if(player1Speed > 0)
+      if(player.Speed > 0)
       {
-        player1LogicPosition += 2;
+        player.LogicPosition += 2;
 
-        if(player1LogicPosition > 299)
+        if(player.LogicPosition > 299)
         {
-          if(player1LogicPosition == 300) { player1LogicPosition = 0;}
-          else if(player1LogicPosition == 301) { player1LogicPosition = 1;}
+          if(player.LogicPosition == 300) { player.LogicPosition = 0;}
+          else if(player.LogicPosition == 301) { player.LogicPosition = 1;}
         }
       }
       else //player moves backward
       {
-        player1LogicPosition -= 2;
+        player.LogicPosition -= 2;
 
 
-        if(player1LogicPosition < 0)
+        if(player.LogicPosition < 0)
         {
-          if(player1LogicPosition == -1) { player1LogicPosition = 299;}
-          else if(player1LogicPosition == -2) { player1LogicPosition = 298;}
+          if(player.LogicPosition == -1) { player.LogicPosition = 299;}
+          else if(player.LogicPosition == -2) { player.LogicPosition = 298;}
         }
       }
     }
-    else if(player1Speed >= 1 || -(player1Speed) >= 1)
+    else if(player.Speed >= 1 || -(player.Speed) >= 1)
     {
-      if(player1Speed > 0)
+      if(player.Speed > 0)
       {
-        player1LogicPosition += 1;
+        player.LogicPosition += 1;
 
-        if(player1LogicPosition > 299)
+        if(player.LogicPosition > 299)
         {
-          if(player1LogicPosition == 300) { player1LogicPosition = 0;}
+          if(player.LogicPosition == 300) { player.LogicPosition = 0;}
         }
       }
       else //if player moving backwards
       {
-        player1LogicPosition -= 1;
+        player.LogicPosition -= 1;
 
-        if(player1LogicPosition < 0)
+        if(player.LogicPosition < 0)
         {
-          if(player1LogicPosition == -1) { player1LogicPosition = 299;}
+          if(player.LogicPosition == -1) { player.LogicPosition = 299;}
         }
       }
     }
 
 
   //slowly loose speed stat
-  if(millis() - lastSpeedDecay > speedDecayInterval && !skipSpeedDecayOnce)
+  if(millis() - player.lastSpeedDecay > speedDecayInterval && !player.skipSpeedDecayOnce)
   {
 
-    if (player1Speed >= 1)
+    if (player.Speed >= 1)
     {
-      float speedDecrease = (float)player1Speed * player1Speed *  0.00004 + 0.15;
+      float speedDecrease = (float)player.Speed * player.Speed *  0.00004 + 0.15;
 
-      speedDecrease = speedDecrease * player1DecelerationMultiplier;
+      speedDecrease = speedDecrease * player.DecelerationMultiplier;
 
-      player1Speed -= speedDecrease;
-      Serial.print("speed decay player1speed: ");
-      Serial.println(player1Speed);
+      player.Speed -= speedDecrease;
+      Serial.print("speed decay player.speed: ");
+      Serial.println(player.Speed);
     }
-    else if(player1Speed <= -1)
+    else if(player.Speed <= -1)
     {
-      float speedDecrease = (float)player1Speed * player1Speed *  0.00004 + 0.15;
+      float speedDecrease = (float)player.Speed * player.Speed *  0.00004 + 0.15;
 
-      speedDecrease = speedDecrease * player1DecelerationMultiplier;
+      speedDecrease = speedDecrease * player.DecelerationMultiplier;
 
-      player1Speed -= -(speedDecrease);
+      player.Speed -= -(speedDecrease);
 
-      Serial.print("speed decay player1speed: ");
-      Serial.println(player1Speed);
+      Serial.print("speed decay player.speed: ");
+      Serial.println(player.Speed);
     }
     else
     {
-    //  if(player1Speed > 0) {player1Speed = 0.4;}
-    //else{player1Speed = -0.4;}
+    //  if(player.Speed > 0) {player.Speed = 0.4;}
+    //else{player.Speed = -0.4;}
     }
-    lastSpeedDecay = millis();
+    player.lastSpeedDecay = millis();
   }
-  if(skipSpeedDecayOnce){skipSpeedDecayOnce = false;}
+  if(player.skipSpeedDecayOnce){player.skipSpeedDecayOnce = false;}
 
 
 
     //check for crossing finish line
-    if(player1LogicPosition >= startFinishLine && player1Crossed == false)
+    if(player.LogicPosition >= startFinishLine && player.crossedLine == false)
     {
-      player1Crossed = true;
+      player.crossedLine = true;
       //Serial.print("Lap #");
-      //Serial.println(player1LapCounter);
+      //Serial.println(player.LapCounter);
 
-      player1LapTimesArray[player1LapCounter] = millis();
+      player.LapTimesArray[player.LapCounter] = millis();
 
       /*
-      if(player1LapCounter > 0)
+      if(player.LapCounter > 0)
       {
-        long laptimeMillis = player1LapTimesArray[player1LapCounter] - player1LapTimesArray[player1LapCounter - 1];
+        long laptimeMillis = player.LapTimesArray[player.LapCounter] - player.LapTimesArray[player.LapCounter - 1];
         float laptimeSeconds = float(laptimeMillis) / 1000;
         Serial.print("Lap Time #");
-        Serial.print(player1LapCounter);
+        Serial.print(player.LapCounter);
         Serial.print(": ");
         Serial.println(laptimeSeconds);
       }
       */
 
-      player1LapCounter++;
+      player.LapCounter++;
     }
-    else if(player1LogicPosition < startFinishLine && player1Crossed == true)
+    else if(player.LogicPosition < startFinishLine && player.crossedLine == true)
     {
-      player1Crossed = false;
+      player.crossedLine = false;
     }
 
     /*//////////////Gravity Objects\\\\\\\\\\\\\\\\
@@ -525,30 +524,30 @@ void update()
     //if the player is between rise start point and highest point of the rise (uphill)*/
 
     //if player doesnt have max speed (positiv or negative)
-    if(!(player1Speed >= MAX_SPEED) && !(-(player1Speed) >= MAX_SPEED))
+    if(!(player.Speed >= MAX_SPEED) && !(-(player.Speed) >= MAX_SPEED))
     {
       //loop through gravity objects
       for(int i = gravityObjectsCount; i > 0; i--)
       {
-        if(player1LogicPosition >= gravityObjects[i - 1][0] && player1LogicPosition < gravityObjects[i - 1][1])
+        if(player.LogicPosition >= gravityObjects[i - 1][0] && player.LogicPosition < gravityObjects[i - 1][1])
         {
           float speedDecrease = (float)0.05 * gravityObjects[i - 1][3];
 
         //  Serial.print("gravity objects decreasing speed by");
         //  Serial.println(speedDecrease);
 
-          player1Speed -= speedDecrease;
+          player.Speed -= speedDecrease;
 
-          if(player1Speed < 0 && player1Speed > -1.0){player1Speed = -1;}
-          if(player1DecelerationMultiplier > 1) {player1DecelerationMultiplier = 1.0;}
+          if(player.Speed < 0 && player.Speed > -1.0){player.Speed = -1;}
+          if(player.DecelerationMultiplier > 1) {player.DecelerationMultiplier = 1.0;}
 
-          skipSpeedDecayOnce = true;
+          player.skipSpeedDecayOnce = true;
 
        //    Serial.print("new speed");
-      //    Serial.println(player1Speed);
+      //    Serial.println(player.Speed);
 
         }//else if the player is between highest point and rise ending (downhill)
-        else if(player1LogicPosition > gravityObjects[i - 1][1] && player1LogicPosition <= gravityObjects[i - 1][2])
+        else if(player.LogicPosition > gravityObjects[i - 1][1] && player.LogicPosition <= gravityObjects[i - 1][2])
         {
           float speedIncrease = (float)0.05 * gravityObjects[i - 1][3];
 
@@ -556,15 +555,15 @@ void update()
         //  Serial.println(speedIncrease);
 
 
-          player1Speed += speedIncrease;
+          player.Speed += speedIncrease;
 
-          if(player1Speed > 0 && player1Speed < 1.0){player1Speed = 1;}
-          if(player1DecelerationMultiplier > 1) {player1DecelerationMultiplier = 1.0;}
+          if(player.Speed > 0 && player.Speed < 1.0){player.Speed = 1;}
+          if(player.DecelerationMultiplier > 1) {player.DecelerationMultiplier = 1.0;}
 
-          skipSpeedDecayOnce = true;
+          player.skipSpeedDecayOnce = true;
 
         //  Serial.print("new speed ");
-        //  Serial.println(player1Speed);
+        //  Serial.println(player.Speed);
         }
       }
     }
@@ -586,8 +585,11 @@ void loop()
 
 if(millis() - lastLoop > loopInterval)
 {
-  draw(player1DrawPosition, player1LogicPosition, player1ColorArrayRGB);
-  update();
+  for(int i = playerCount; i > 0; i--)
+  {
+    draw(playerInstances[i-1]);
+    update(playerInstances[i-1]);
+  }
   lastLoop = millis();
 }
   //int buttonvalue = digitalRead(PLAYERONEBUTTONPIN);
