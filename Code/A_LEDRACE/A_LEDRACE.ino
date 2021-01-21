@@ -22,11 +22,14 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 Adafruit_SSD1306 display2(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 
-byte g = 100;
-byte r = 11;
-byte rz = 5;
+int g = 100;
+int r = 11;
+int rz = 5;
+int g2 = 200;
+int r2 = 21;
+int rz2 = 15;
 byte m ;
 byte w ;
 bool s = 1;
-bool gamestate = true;
+bool gamestate = false;
 int a; int b; int c; int d; int e; 
