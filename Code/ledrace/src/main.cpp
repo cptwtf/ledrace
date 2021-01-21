@@ -28,7 +28,26 @@ unsigned long player1LapTimesArray[10];
 bool player1Crossed = false;
 bool skipSpeedDecayOnce = false;
 
+class Player {
+  public:
+    int LogicPosition = startFinishLine - 1;
+    int DrawPosition = this->LogicPosition;
+    byte ColorArrayRGB[3] = {0,0,0};
+    uint32_t player1ColorInteger = pixels.Color(player1ColorArrayRGB[0], player1ColorArrayRGB[1], player1ColorArrayRGB[2]);
+    float Speed = 0.0;
+    float DecelerationMultiplier = 1.0;
+    bool buttonIsDown = false;
+    int LapCounter = 0;
+    unsigned long LapTimesArray[10];
+    bool crossedLine = false;
 
+    void setColor(int R, int G, int B)
+    {
+      this->ColorArrayRGB[0] = R;
+      this->ColorArrayRGB[1] = G;
+      this->ColorArrayRGB[2] = B;
+    }
+};
 
 const int MAX_SPEED = 100;
 const int SPEED30PERCENT = MAX_SPEED / 100 * 30;
