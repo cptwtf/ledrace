@@ -15,6 +15,13 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 int startFinishLine = 10;
 byte startFinishLineColorArrayRGB[] = {254,254,254};
 uint32_t startFinishLineColorInteger = pixels.Color(startFinishLineColorArrayRGB[0], startFinishLineColorArrayRGB[1], startFinishLineColorArrayRGB[2]);
+
+
+//game options
+int playerCount = 1;
+
+
+
 //startposition
 int player1LogicPosition = startFinishLine - 1;
 int player1DrawPosition = player1LogicPosition;
@@ -36,6 +43,7 @@ class Player {
     uint32_t ColorInteger;
     float Speed = 0.0;
     float DecelerationMultiplier = 1.0;
+    int buttonPin;
     bool buttonIsDown = false;
     int LapCounter = 0;
     unsigned long LapTimesArray[10];
@@ -49,6 +57,8 @@ class Player {
       this->ColorInteger = pixels.Color(this->ColorArrayRGB[0], this->ColorArrayRGB[1], this->ColorArrayRGB[2]);
     }
 };
+
+Player playerInstances[2];
 
 const int MAX_SPEED = 100;
 const int SPEED30PERCENT = MAX_SPEED / 100 * 30;
@@ -87,13 +97,37 @@ void setup() {
 
 void initGame()
 {
-  //draw player 1 start position
-  pixels.setPixelColor(player1DrawPosition - 2,
-                        pixels.Color(player1ColorArrayRGB[0], player1ColorArrayRGB[1], player1ColorArrayRGB[2]));
-  pixels.setPixelColor(player1DrawPosition - 1,
-                        pixels.Color(player1ColorArrayRGB[0], player1ColorArrayRGB[1], player1ColorArrayRGB[2]));
-  pixels.setPixelColor(player1DrawPosition,
-                        pixels.Color(player1ColorArrayRGB[0], player1ColorArrayRGB[1], player1ColorArrayRGB[2]));
+  if(playerCount == 1)
+  {
+    //create player object and put in array
+    Player player1;
+    player1.setColor(0, 0, 254);
+    playerInstances[0] = player1;
+
+  }
+  else if(playerCount == 2)
+  {
+    //do stuff for 2 player init
+  }
+  else
+  {
+    //something wrent wrong :p
+  }
+
+  //draw players
+  //loop through player instances array
+  //then nested loop for three player pixels based on player position
+  for(int i = playerCount; i > 0; i--)
+  {
+    for(int j = 2; j >= 0; j--)
+    {
+      pixels.setPixelColor(playerInstances[i-1].DrawPosition - j,
+                            pixels.Color(playerInstances[i-1].ColorArrayRGB[0],
+                                         playerInstances[i-1].ColorArrayRGB[1],
+                                         playerInstances[i-1].ColorArrayRGB[2]));
+    }
+  }
+
 
   //draw start/finish line
   pixels.setPixelColor(startFinishLine,
