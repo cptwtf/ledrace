@@ -33,7 +33,7 @@ class Player {
     int LogicPosition = startFinishLine - 1;
     int DrawPosition = this->LogicPosition;
     byte ColorArrayRGB[3] = {0,0,0};
-    uint32_t player1ColorInteger = pixels.Color(player1ColorArrayRGB[0], player1ColorArrayRGB[1], player1ColorArrayRGB[2]);
+    uint32_t ColorInteger;
     float Speed = 0.0;
     float DecelerationMultiplier = 1.0;
     bool buttonIsDown = false;
@@ -46,6 +46,7 @@ class Player {
       this->ColorArrayRGB[0] = R;
       this->ColorArrayRGB[1] = G;
       this->ColorArrayRGB[2] = B;
+      this->ColorInteger = pixels.Color(this->ColorArrayRGB[0], this->ColorArrayRGB[1], this->ColorArrayRGB[2]);
     }
 };
 
