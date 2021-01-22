@@ -2,6 +2,9 @@
 #ifdef __AVR__
   #include <avr/power.h>
 #endif
+
+//PINS kevins setup: pin:2   player1:15     player2: 4
+//PINS remote setup: pin:    player1: 2     player2:13
 #define PIN               2
 #define PLAYERONEBUTTONPIN   15
 #define PLAYERTWOBUTTONPIN 4
@@ -63,8 +66,8 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 //"gravity" objects
 //[objectNumber]
 //            [start][topmost][end][intensity]
-const int gravityObjectsCount = 5;
-int gravityObjects[gravityObjectsCount][4] = {{19,41,42,6},{42,43,69,5},{82,126,162,8}, {163,174,175,3}, {167, 168, 204, 6}};
+const int gravityObjectsCount = 2;
+int gravityObjects[gravityObjectsCount][4] = {{19,41,69,6},{82,126,204,5}};
 
 
 
