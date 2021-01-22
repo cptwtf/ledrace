@@ -20,7 +20,7 @@ uint32_t startFinishLineColorInteger = pixels.Color(startFinishLineColorArrayRGB
 
 //game options
 int playerCount = 2;
-int maxLaps = 10;
+int maxLaps = 1;
 
 
 
@@ -39,6 +39,9 @@ class Player {
     bool crossedLine = false;
     unsigned long lastSpeedDecay = 0;
     bool skipSpeedDecayOnce = false;
+    bool isActive = true;
+    bool reachedMaxLaps = false;
+    bool isTheWinner = true;
 
     void setColor(int R, int G, int B)
     {
@@ -70,7 +73,14 @@ unsigned long lastLoop = 0;
 const long speedDecayInterval = 32;
 const long loopInterval = 32;
 
+int lapFlagResetLow;
+int lapFlagResetHigh;
+bool finishLineHelperFlag = false;
+
 bool gameInitDone = false;
+bool inMenu = false;
+bool inGame = true;
+bool gameWon = false;
 
 void setup() {
 #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
@@ -152,6 +162,14 @@ void initGame(int playerCount)
   //draw start/finish line
   pixels.setPixelColor(startFinishLine,
                         pixels.Color(startFinishLineColorArrayRGB[0], startFinishLineColorArrayRGB[1], startFinishLineColorArrayRGB[2]));
+
+  //set boundaries for lap flag Reset
+  lapFlagResetLow  = startFinishLine + NUMPIXELS / 2 - 5;
+  if(lapFlagResetLow > 299 ) { lapFlagResetLow -= 299;}
+  lapFlagResetHigh = startFinishLine + NUMPIXELS / 2 + 5;
+  if(lapFlagResetHigh > 299 ) { lapFlagResetHigh -= 299;}
+
+
 
   //draw color merge test //DEACTIVATED
   for(int i = NUMPIXELS; i < NUMPIXELS; i++)
@@ -338,7 +356,6 @@ void draw(Player &player)
              if(playerDrawPositionLocal == 0) { playerDrawPositionLocal = 299; }
              else
              {
-              //Serial.println("DRAW IS DECREMENTING PLAYERDRAWPOSITIONLOCAL");
                playerDrawPositionLocal--;
              }
     }
@@ -350,11 +367,7 @@ void draw(Player &player)
 
 void update(Player &player)
 {
-  //Serial.println("debug update");
-  //Serial.print("update player1speed: ");
-  //Serial.println(player1Speed);
-
-  //If player can still gain speed
+    //If player can still gain speed
     if(player.Speed < MAX_SPEED)
     {
       if( digitalRead(player.buttonPin) == 1 && player.buttonIsDown == false)
@@ -376,10 +389,8 @@ void update(Player &player)
         //add to deceleration multiplier so car gets slow quicker the longer user doesnt press the button
         //should help with long "roll out" on high velocity
         player.DecelerationMultiplier += 0.25;
-        //Serial.print("decel: ");
-        //Serial.println(player.DecelerationMultiplier);
-      }
-    }
+       }
+     }
 
     //evaluate speed and update player position
     //checks if player moves and how strong in either direction
@@ -490,28 +501,14 @@ void update(Player &player)
     if (player.Speed >= 1)
     {
       float speedDecrease = (float)player.Speed * player.Speed *  0.00004 + 0.15;
-
       speedDecrease = speedDecrease * player.DecelerationMultiplier;
-
       player.Speed -= speedDecrease;
-      Serial.print("speed decay player.speed: ");
-      Serial.println(player.Speed);
     }
     else if(player.Speed <= -1)
     {
       float speedDecrease = (float)player.Speed * player.Speed *  0.00004 + 0.15;
-
       speedDecrease = speedDecrease * player.DecelerationMultiplier;
-
       player.Speed -= -(speedDecrease);
-
-      Serial.print("speed decay player.speed: ");
-      Serial.println(player.Speed);
-    }
-    else
-    {
-    //  if(player.Speed > 0) {player.Speed = 0.4;}
-    //else{player.Speed = -0.4;}
     }
     player.lastSpeedDecay = millis();
   }
@@ -523,28 +520,52 @@ void update(Player &player)
     if(player.LogicPosition >= startFinishLine && player.crossedLine == false)
     {
       player.crossedLine = true;
-      //Serial.print("Lap #");
-      //Serial.println(player.LapCounter);
 
+      //save total time
       player.LapTimesArray[player.LapCounter] = millis();
 
-      /*
+      //if this is a complete round save the lap duration
+      //in ms
       if(player.LapCounter > 0)
       {
-        long laptimeMillis = player.LapTimesArray[player.LapCounter] - player.LapTimesArray[player.LapCounter - 1];
-        float laptimeSeconds = float(laptimeMillis) / 1000;
-        Serial.print("Lap Time #");
-        Serial.print(player.LapCounter);
-        Serial.print(": ");
-        Serial.println(laptimeSeconds);
+        player.LapTimesArray[player.LapCounter] -= player.LapTimesArray[player.LapCounter - 1];
       }
-      */
 
-      player.LapCounter++;
+      //if this was not the final lap
+      if(player.LapCounter < maxLaps)
+      {
+        player.LapCounter++;
+      }
+      else //this was the final lap
+      {
+        //set flag that triggers code block in update()
+        player.reachedMaxLaps = true;
+      }
     }
-    else if(player.LogicPosition < startFinishLine && player.crossedLine == true)
+    else if(player.LogicPosition > lapFlagResetLow && player.LogicPosition < lapFlagResetHigh && player.crossedLine == true)
     {
+      finishLineHelperFlag = true;
+    }
+    else if(player.LogicPosition < startFinishLine && player.crossedLine == true && finishLineHelperFlag == true)
+    {
+      finishLineHelperFlag = false;
       player.crossedLine = false;
+    }
+
+    //deactivate player controls/update after final lap
+    if(player.isActive && player.reachedMaxLaps)
+    {
+      player.isActive = false;
+
+      //if the player is first to reach max laps
+      //color the track in player color and set bool winner
+      if (!gameWon)
+      {
+        gameWon = true;
+        player.isTheWinner = true;
+        pixels.fill(player.ColorInteger);
+        pixels.show();
+      }
     }
 
     /*//////////////Gravity Objects\\\\\\\\\\\\\\\\
@@ -561,67 +582,58 @@ void update(Player &player)
         if(player.LogicPosition >= gravityObjects[i - 1][0] && player.LogicPosition < gravityObjects[i - 1][1])
         {
           float speedDecrease = (float)0.05 * gravityObjects[i - 1][3];
-
-        //  Serial.print("gravity objects decreasing speed by");
-        //  Serial.println(speedDecrease);
-
           player.Speed -= speedDecrease;
 
           if(player.Speed < 0 && player.Speed > -1.0){player.Speed = -1;}
           if(player.DecelerationMultiplier > 1) {player.DecelerationMultiplier = 1.0;}
 
           player.skipSpeedDecayOnce = true;
-
-       //    Serial.print("new speed");
-      //    Serial.println(player.Speed);
-
         }//else if the player is between highest point and rise ending (downhill)
         else if(player.LogicPosition > gravityObjects[i - 1][1] && player.LogicPosition <= gravityObjects[i - 1][2])
         {
           float speedIncrease = (float)0.05 * gravityObjects[i - 1][3];
-
-        //  Serial.print("gravity objects increasing speed by");
-        //  Serial.println(speedIncrease);
-
-
           player.Speed += speedIncrease;
 
           if(player.Speed > 0 && player.Speed < 1.0){player.Speed = 1;}
           if(player.DecelerationMultiplier > 1) {player.DecelerationMultiplier = 1.0;}
 
           player.skipSpeedDecayOnce = true;
-
-        //  Serial.print("new speed ");
-        //  Serial.println(player.Speed);
         }
       }
     }
-
-
-
-
 
 }
 
 void loop()
 {
-  //Serial.println("debug loop");
- if(!gameInitDone)
- {
-   initGame(playerCount);
-   delay(100);
- }
-
-if(millis() - lastLoop > loopInterval)
-{
-  for(int i = playerCount; i > 0; i--)
+  //if the game has been started
+  if(inGame == true)
   {
-    draw(playerInstances[i-1]);
-    update(playerInstances[i-1]);
+    if(!gameInitDone) //initialize game
+    {
+      initGame(playerCount);
+      delay(100);
+    }
+
+    //gameloop
+    //every loopInterval ms (standard: 32) every player
+    //gets drawn and updated
+    if(millis() - lastLoop > loopInterval)
+    {
+      for(int i = playerCount; i > 0; i--)
+      {
+        if(playerInstances[i-1].isActive)
+        {
+          draw(playerInstances[i-1]);
+          update(playerInstances[i-1]);
+        }
+      }
+      lastLoop = millis();
+    }
   }
-  lastLoop = millis();
+else if(inMenu == true)
+{
+  //do menu stuff here
+  // set
 }
-  //int buttonvalue = digitalRead(PLAYERONEBUTTONPIN);
- //Serial.print("loop");
-//  Serial.println(buttonvalue);
 }
