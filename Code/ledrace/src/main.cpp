@@ -3,7 +3,8 @@
   #include <avr/power.h>
 #endif
 #define PIN               2
-#define PLAYERONEBUTTONPIN   4
+#define PLAYERONEBUTTONPIN   15
+#define PLAYERTWOBUTTONPIN 4
 #define NUMPIXELS         300
 
 
@@ -18,7 +19,7 @@ uint32_t startFinishLineColorInteger = pixels.Color(startFinishLineColorArrayRGB
 
 
 //game options
-int playerCount = 1;
+int playerCount = 2;
 
 
 
@@ -60,7 +61,7 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 //[objectNumber]
 //            [start][topmost][end][intensity]
 const int gravityObjectsCount = 5;
-int gravityObjects[gravityObjectsCount][4] = {{12,41,42,10},{42,43,69,5},{82,126,162,8}, {163,174,175,3}, {167, 168, 204, 6}};
+int gravityObjects[gravityObjectsCount][4] = {{19,41,42,6},{42,43,69,5},{82,126,162,8}, {163,174,175,3}, {167, 168, 204, 6}};
 
 
 
@@ -79,13 +80,14 @@ void setup() {
   Serial.begin(9600);
   Serial.println("debug setup");
   pinMode(PLAYERONEBUTTONPIN, INPUT);
+  pinMode(PLAYERTWOBUTTONPIN, INPUT);
 
   pixels.begin();
   pixels.clear();
 
 }
 
-void initGame()
+void initGame(int playerCount)
 {
   if(playerCount == 1)
   {
@@ -98,7 +100,17 @@ void initGame()
   }
   else if(playerCount == 2)
   {
-    //do stuff for 2 player init
+    //create player1 object and put in array
+    Player player1;
+    player1.setColor(0, 0, 254);
+    player1.buttonPin = PLAYERONEBUTTONPIN;
+    playerInstances[0] = player1;
+
+    //create player2 object and put in array
+    Player player2;
+    player2.setColor(254, 0, 0);
+    player2.buttonPin = PLAYERTWOBUTTONPIN;
+    playerInstances[1] = player2;
   }
   else
   {
@@ -579,7 +591,7 @@ void loop()
   //Serial.println("debug loop");
  if(!gameInitDone)
  {
-   initGame();
+   initGame(playerCount);
    delay(100);
  }
 
