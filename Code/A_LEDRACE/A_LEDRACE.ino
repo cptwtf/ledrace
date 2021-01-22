@@ -21,15 +21,12 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 Adafruit_SSD1306 display2(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
-
-int g = 100;
-int r = 11;
-int rz = 5;
-int g2 = 200;
-int r2 = 21;
-int rz2 = 15;
-byte m ;
-byte w ;
-bool s = 1;
-bool gamestate = false;
-int a; int b; int c; int d; int e; 
+const int buttonA = 33; const int buttonB = 26; const int buttonC = 25;
+int readingA; int readingB; int readingC;
+int buttonStateA; int buttonStateB; int buttonStateC;
+int lastButtonStateA = LOW; int lastButtonStateB = LOW; int lastButtonStateC = LOW;
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 500;
+bool gamestate = false; // gamestatus
+byte n ; byte m ; byte w ; bool s = 1;// menüstatevariablen
+int g = 100; int r = 11; int rz = 5; int g2 = 200; int r2 = 21; int rz2 = 15; //Spielermenüdaten
