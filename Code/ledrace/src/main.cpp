@@ -20,7 +20,7 @@ uint32_t startFinishLineColorInteger = pixels.Color(startFinishLineColorArrayRGB
 
 //game options
 int playerCount = 2;
-
+int maxLaps = 10;
 
 
 
@@ -89,6 +89,8 @@ void setup() {
 
 void initGame(int playerCount)
 {
+  byte mixedColorsArray[3];
+
   if(playerCount == 1)
   {
     //create player object and put in array
@@ -111,25 +113,40 @@ void initGame(int playerCount)
     player2.setColor(254, 0, 0);
     player2.buttonPin = PLAYERTWOBUTTONPIN;
     playerInstances[1] = player2;
+
+    //mix player colors
+    mixedColorsArray[0] = (playerInstances[0].ColorArrayRGB[0] + playerInstances[1].ColorArrayRGB[0]) / 2;
+    mixedColorsArray[1] = (playerInstances[0].ColorArrayRGB[1] + playerInstances[1].ColorArrayRGB[1]) / 2;
+    mixedColorsArray[2] = (playerInstances[0].ColorArrayRGB[2] + playerInstances[1].ColorArrayRGB[2]) / 2;
+
   }
   else
   {
     //something wrent wrong :p
   }
 
-  //draw players
-  //loop through player instances array
-  //then nested loop for three player pixels based on player position
-  for(int i = playerCount; i > 0; i--)
+  //draw player
+  if(playerCount == 1)
   {
     for(int j = 2; j >= 0; j--)
     {
-      pixels.setPixelColor(playerInstances[i-1].DrawPosition - j,
-                            pixels.Color(playerInstances[i-1].ColorArrayRGB[0],
-                                         playerInstances[i-1].ColorArrayRGB[1],
-                                         playerInstances[i-1].ColorArrayRGB[2]));
+      pixels.setPixelColor(playerInstances[0].DrawPosition - j,
+                pixels.Color(playerInstances[0].ColorArrayRGB[0],
+                             playerInstances[0].ColorArrayRGB[1],
+                             playerInstances[0].ColorArrayRGB[2]));
     }
   }
+  else if(playerCount == 2) //draw "both" players by mixing their color
+  {
+    for(int j = 2; j >= 0; j--)
+    {
+      pixels.setPixelColor(playerInstances[0].DrawPosition - j,
+                pixels.Color(mixedColorsArray[0],
+                             mixedColorsArray[1],
+                             mixedColorsArray[2]));
+    }
+  }
+
 
 
   //draw start/finish line
