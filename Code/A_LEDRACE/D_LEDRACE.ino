@@ -76,6 +76,7 @@ while(m == 2 && w == 3)//Logo
   display.drawBitmap(0,0, logoart1, 128, 64, 1);
   display.display();
   gamestate = true;
+  m = 0;
   light();
 
 }
@@ -116,6 +117,7 @@ while(m == 3 && w == 3)//einzelspielerLogo
   display.drawBitmap(0,0, logoart1, 128, 64, 1);
   display.display();
   gamestate = true;
+  m = 0;
   light();
 
 }

@@ -1,6 +1,9 @@
 void setup() {
   //Setup, Clear and BZTGLogo
   Serial.begin(115200);
+  pinMode(buttonA, INPUT);
+  pinMode(buttonB, INPUT);
+  pinMode(buttonC, INPUT);
   display1setup();
   display2setup();
   delay(2000);
