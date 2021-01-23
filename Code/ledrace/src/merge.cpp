@@ -2510,7 +2510,7 @@ void update(Player &player)
 
 }
 
-void changeColor(String colorPlayerOne, String colorPlayerTwo)
+void changeColors(String colorPlayerOne, String colorPlayerTwo)
 {
   if(colorPlayerOne == "rot" && colorPlayerTwo == "blau")
   {
