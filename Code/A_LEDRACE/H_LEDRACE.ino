@@ -1,12 +1,12 @@
-void light() {
+void light() { //this was just stuff for dennis to test mixed colors
 
     byte color1R = 0;
     byte color1G = 0;
     byte color1B = 254;
-    
+
         byte color2R = 254;
         byte color2G = 0;
-        byte color2B = 0;    
+        byte color2B = 0;
 
     pixels.setPixelColor(0, pixels.Color(color1R, color1G, color1B));
     pixels.setPixelColor(1, pixels.Color(color1R, color1G, color1B));
@@ -15,7 +15,7 @@ void light() {
     pixels.setPixelColor(4, pixels.Color(color2R, color2G, color2B));
     pixels.setPixelColor(5, pixels.Color(color2R, color2G, color2B));
     pixels.setPixelColor(6, pixels.Color(color2R, color2G, color2B));
-    
+
 byte mixedCol[3];
  mixedCol[0] = (color1R + color2R) / 2;
  mixedCol[1] = (color1G + color2G) / 2;
@@ -25,6 +25,6 @@ byte mixedCol[3];
    pixels.setPixelColor(9, pixels.Color(mixedCol[0], mixedCol[1], mixedCol[2]));
    pixels.setPixelColor(10, pixels.Color(mixedCol[0], mixedCol[1], mixedCol[2]));
     pixels.show();
-    
+
     delay(DELAYVAL);
   }
