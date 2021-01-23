@@ -1939,7 +1939,7 @@ bool finishLineHelperFlag = false;
 
 bool gameInitDone = false;
 bool inMenu = false;
-bool inGame = false;
+bool inGame = true;
 bool gameWon = false;
 
 void setup() {
@@ -2563,7 +2563,7 @@ void changeColors(String colorPlayerOne, String colorPlayerTwo)
 
 void startOnePlayerGame()
 {
-  //set player count and ingame = true
+  //set player count and ingame == true
   playerCount = 1;
   inGame = true;
 }
@@ -2578,20 +2578,22 @@ void menuloop()
 {
  if (gamestate == true && multiplayer == true)
  {
-
       player1screen();
       player2screen();
-      Serial.println("STARTING TWO PLAYER GAME");
-      startTwoPlayerGame();
-      Serial.println("STARTED TWO PLAYER GAME");
+      if(inGame == false)
+      {
+        startTwoPlayerGame();
+        Serial.println("STARTED TWO PLAYER GAME");
+      }
  }
  else if(gamestate == true && multiplayer == false)
  {
       player1screen();
-      Serial.println("STARTING SINGLEPLAYER GAME");
-      startOnePlayerGame();
-      Serial.println("STARTED SINGLEPLAYER GAME");
-
+      if(inGame == false)
+      {
+        startOnePlayerGame();
+        Serial.println("STARTED ONE PLAYER GAME");
+      }
  }
 else
  {
@@ -3034,6 +3036,8 @@ void loop()
     {
       initGame(playerCount);
       delay(100);
+
+      Serial.println("GAME INIT DONE");
     }
 
     //gameloop
