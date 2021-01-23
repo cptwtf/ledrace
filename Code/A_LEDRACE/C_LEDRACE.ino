@@ -16,10 +16,17 @@ void setup() {
 }
 
 void loop() {
- if (gamestate == true){
+ if (gamestate == true && multiplayer == true){
       player1screen();
       player2screen();
- }else{
+ //    startTwoPlayerGame();
+      
+ }
+ else if(gamestate == true && multiplayer == false){
+      player1screen();
+   //   startOnePlayerGame();
+      
+ }else {
       display12idle();
       display1menue();
  }

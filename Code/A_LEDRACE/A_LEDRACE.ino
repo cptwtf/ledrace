@@ -28,5 +28,6 @@ int lastButtonStateA = LOW; int lastButtonStateB = LOW; int lastButtonStateC = L
 unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 500;
 bool gamestate = false; // gamestatus
+bool multiplayer = false;
 byte n ; byte m ; byte w ; bool s = 1;// menüstatevariablen
 int g = 100; int r = 11; int rz = 5; int g2 = 200; int r2 = 21; int rz2 = 15; //Spielermenüdaten

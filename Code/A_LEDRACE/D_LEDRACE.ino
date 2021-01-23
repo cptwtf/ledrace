@@ -69,15 +69,16 @@ while(m == 1 && w > 1|| m < 1 && w > 1 || m == 6 && w > 1 || m > 6 && w > 1)//st
   display.display();
   abfrage2();
 }
-while(m == 2 && w == 3)//Logo
+while(m == 2 && w == 3)//multiplayerLogo
   {
   delay(300);
   display.clearDisplay();
   display.drawBitmap(0,0, logoart1, 128, 64, 1);
   display.display();
   gamestate = true;
+  multiplayer = true;
   m = 0;
-  light();
+  
 
 }
 while(m == 3 && w == 1)//einzelspieler
@@ -101,6 +102,7 @@ while(m == 3 && w == 1)//einzelspieler
   display.drawBitmap(0,0, spielenmenuart2, 128, 64, 1);
   display.display();
   abfrage2();
+ 
 }
  while(m == 3 && w == 2 && s == 0)//einzelspieler NEIN
   {
@@ -117,8 +119,9 @@ while(m == 3 && w == 3)//einzelspielerLogo
   display.drawBitmap(0,0, logoart1, 128, 64, 1);
   display.display();
   gamestate = true;
+  multiplayer = false;
   m = 0;
-  light();
+  
 
 }
 
@@ -197,6 +200,7 @@ while(m == 4 && w == 1)//optionen
   display.drawBitmap(0,0, fertigmenuart2, 128, 64, 1);
   display.display();
   abfrage2();
+
 }
 
  while(m == 4 && w == 3 && s == 0)//sicher Nein 
@@ -214,10 +218,12 @@ while(m == 4 && w == 4 && s == 1)//logo mit speichern
   display.clearDisplay();
   display.drawBitmap(0,0, logoart1, 128, 64, 1);
   display.display();
+        // changeColors("red", "blue");(if n2 = farbe rot blau ,n3 blau gelb ,n4 rot gelb, n5 ???;
     s = 1;
     m = 1;
     w = 1;
     n = 1;
+ 
     }
 
 
