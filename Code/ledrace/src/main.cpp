@@ -4,7 +4,7 @@
 #endif
 
 //PINS kevins setup: pin:2   player1:15     player2: 4
-//PINS remote setup: pin:    player1: 2     player2:13
+//PINS remote setup: pin:16    player1: 2     player2:13
 #define PIN               2
 #define PLAYERONEBUTTONPIN   15
 #define PLAYERTWOBUTTONPIN 4
@@ -566,7 +566,11 @@ void update(Player &player)
       {
         gameWon = true;
         player.isTheWinner = true;
-        pixels.fill(player.ColorInteger);
+
+        for(int i = NUMPIXELS - 1; i > 1; i -= 2)
+        {
+          pixels.setPixelColor(i, pixels.Color(254,0,0));
+        }
         pixels.show();
       }
     }
