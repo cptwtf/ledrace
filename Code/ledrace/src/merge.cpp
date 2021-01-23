@@ -2510,6 +2510,34 @@ void update(Player &player)
 
 }
 
+long int bestLapTime(int playerNumber)
+{
+  long int bestLap = 9999;
+
+  if(playerNumber == 1)
+  {
+    for(int i = maxLaps; i >= 1; i--)
+    {
+      if(player1.LapTimesArray[i] \ 1000 < bestLap)
+      {
+        bestLap = player1.LapTimesArray[i] \ 1000;
+      }
+    }
+  }
+  else if(playerNumber == 2)
+  {
+    for(int i = maxLaps; i >= 1; i--)
+    {
+      if(player2.LapTimesArray[i] \ 1000 < bestLap)
+      {
+        bestLap = player1.LapTimesArray[i] \ 1000;
+      }
+    }
+  }
+
+  return bestLap;
+}
+
 void changeColors(String colorPlayerOne, String colorPlayerTwo)
 {
   if(colorPlayerOne == "rot" && colorPlayerTwo == "blau")
@@ -2594,6 +2622,7 @@ void menuloop()
         startOnePlayerGame();
         Serial.println("STARTED ONE PLAYER GAME");
       }
+
  }
 else
  {
@@ -2876,6 +2905,7 @@ void player1screen(){
   display.print("=");
   x = 110; y = 1;
   display.setCursor(x,y);
+  g = player1.Speed;
   display.print(g);
 
   x = 1; y = 10;
@@ -2886,16 +2916,18 @@ void player1screen(){
   display.print("=");
   x = 110; y = 10;
   display.setCursor(x,y);
+  r = player1.LapCounter;
   display.print(r);
 
   x = 1; y = 19;
   display.setCursor(x,y);
-  display.print("Rundenzeit");
+  display.print("Rundenrekord");
   x = 100; y = 19;
   display.setCursor(x,y);
   display.print("=");
   x = 110; y = 19;
   display.setCursor(x,y);
+  rz = bestLapTime(1);
   display.print(rz);
   display.display();
 
@@ -2914,6 +2946,7 @@ void player2screen(){
   display2.print("=");
   x = 110; y = 1;
   display2.setCursor(x,y);
+  g2 = player2.Speed;
   display2.print(g2);
 
   x = 1; y = 10;
@@ -2924,16 +2957,18 @@ void player2screen(){
   display2.print("=");
   x = 110; y = 10;
   display2.setCursor(x,y);
+  r2 = player2.LapCounter;
   display2.print(r2);
 
   x = 1; y = 19;
   display2.setCursor(x,y);
-  display2.print("Rundenzeit");
+  display2.print("Rundenrekord");
   x = 100; y = 19;
   display2.setCursor(x,y);
   display2.print("=");
   x = 110; y = 19;
   display2.setCursor(x,y);
+  rz2 = bestLapTime(2);
   display2.print(rz2);
   display2.display();
   }
