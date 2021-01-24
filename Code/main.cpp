@@ -35,7 +35,8 @@ bool menuColorChosen = false;
 byte menuPlayerOneColor[3];
 byte menuPlayerTwoColor[3];
 byte n ; byte m ; byte w ; bool s = 1;// menüstatevariablen
-int g = 100; int r = 11; int rz = 5; int g2 = 200; int r2 = 21; int rz2 = 15; //Spielermenüdaten
+float g = 100; int r = 11; float rz = 5; float g2 = 200; int r2 = 21; float rz2 = 15; //Spielermenüdaten
+
 
 //declaring prototype functions because arduino ide compiler doesnt care about order but gcc does
 //and this was quicker and less error prone then reordering the menu code :p
@@ -1896,13 +1897,15 @@ class Player {
     int buttonPin;
     bool buttonIsDown = false;
     int LapCounter = 0;
-    unsigned long LapTimesArray[10] = {0,0,0,0,0,0,0,0,0,0};
+    float LapTimesArray[10] = {0,0,0,0,0,0,0,0,0,0};
+    float bestLapTime = 0.0;
     bool crossedLine = false;
     unsigned long lastSpeedDecay = 0;
     bool skipSpeedDecayOnce = false;
     bool isActive = true;
     bool reachedMaxLaps = false;
     bool isTheWinner = true;
+    String ColorString;
 
     void setColor(int R, int G, int B)
     {
@@ -1927,7 +1930,8 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 const int gravityObjectsCount = 2;
 int gravityObjects[gravityObjectsCount][4] = {{19,41,69,6},{82,126,204,5}};
 
-
+unsigned long menuLastLoop = 0;
+const long menuLoopInterval = 128;
 
 unsigned long lastLoop = 0;
 //interval between speed decays in ms
@@ -1990,6 +1994,7 @@ void initGame(int playerCount)
     else
     {
       player1.setColor(0, 0, 254);
+      player1.ColorString = "Blau";
     }
     player1.buttonPin = PLAYERONEBUTTONPIN;
     playerInstances[0] = player1;
@@ -2008,6 +2013,7 @@ void initGame(int playerCount)
     else
     {
       player1.setColor(0, 0, 254);
+      player1.ColorString = "Blau";
     }
 
     player1.buttonPin = PLAYERONEBUTTONPIN;
@@ -2023,6 +2029,7 @@ void initGame(int playerCount)
     else
     {
       player2.setColor(254, 0, 0);
+      player2.ColorString = "Rot";
     }
 
     player2.buttonPin = PLAYERTWOBUTTONPIN;
@@ -2111,7 +2118,7 @@ void draw(Player &player)
   while(playerDrawPositionLocal != playerLogicPosition)
   {
     //Serial.println(playerDrawPositionLocal);
-    //  Serial.println(playerLogicPosition);
+    // //Serial.println(playerLogicPosition);
     //Strip End/Beginning handling
     int sternmostPixel;
     if(playerDrawPositionLocal == 0 ){ sternmostPixel = NUMPIXELS - 2; }
@@ -2426,13 +2433,16 @@ void update(Player &player)
       player.crossedLine = true;
 
       //save total time
-      player.LapTimesArray[player.LapCounter] = millis();
+      player.LapTimesArray[player.LapCounter] = millis() / (float)1000;
 
       //if this is a complete round save the lap duration
       //in ms
       if(player.LapCounter > 0)
       {
         player.LapTimesArray[player.LapCounter] -= player.LapTimesArray[player.LapCounter - 1];
+
+        //check if this was the fastest lap
+        if(player.bestLapTime > player.LapTimesArray[player.LapCounter] || player.bestLapTime == 0) { player.bestLapTime = player.LapTimesArray[player.LapCounter]; }
       }
 
       //if this was not the final lap
@@ -2468,10 +2478,16 @@ void update(Player &player)
         gameWon = true;
         player.isTheWinner = true;
 
-        for(int i = NUMPIXELS - 1; i > 1; i -= 2)
+        byte dimmedWinnerColorArray[3];
+
+        for(int i = 2; i >= 0; i--)
         {
-          pixels.setPixelColor(i, pixels.Color(254,0,0));
+          dimmedWinnerColorArray[i] = player.ColorArrayRGB[i] / 8;
         }
+
+        uint32_t dimmedWinnerColor = pixels.Color(dimmedWinnerColorArray[0], dimmedWinnerColorArray[1], dimmedWinnerColorArray[2]);
+
+        pixels.fill(dimmedWinnerColor);
         pixels.show();
       }
     }
@@ -2522,7 +2538,7 @@ float bestLapTime(int playerNumber)
     {
       if(playerInstances[playerNumber-1].LapTimesArray[i] > 0 && playerInstances[playerNumber-1].LapTimesArray[i] / 1000 < bestLap)
       {
-        bestLap = playerInstances[playerNumber-1].LapTimesArray[i] / 1000;
+        bestLap = playerInstances[playerNumber-1].LapTimesArray[i] / (float)1000;
       }
     }
   }
@@ -2530,8 +2546,8 @@ float bestLapTime(int playerNumber)
   {
     bestLap = 0;
   }
-  Serial.print("bestLapTime() returns: ");
-  Serial.print(bestLap);
+ //Serial.print("bestLapTime() returns: ");
+ //Serial.println(bestLap);
   return bestLap;
 }
 
@@ -2542,30 +2558,41 @@ void changeColors(String colorPlayerOne, String colorPlayerTwo)
     menuPlayerOneColor[0] = 254;
     menuPlayerOneColor[1] = 0;
     menuPlayerOneColor[2] = 0;
+    playerInstances[0].ColorString = "Rot";
 
     menuPlayerTwoColor[0] = 0;
     menuPlayerTwoColor[1] = 0;
     menuPlayerTwoColor[2] = 254;
+    playerInstances[1].ColorString = "Blau";
+
   }
   else if(colorPlayerOne == "blau" && colorPlayerTwo == "gelb")
   {
     menuPlayerOneColor[0] = 0;
     menuPlayerOneColor[1] = 0;
     menuPlayerOneColor[2] = 254;
+    playerInstances[0].ColorString = "Blau";
+
 
     menuPlayerTwoColor[0] = 254;
     menuPlayerTwoColor[1] = 254;
     menuPlayerTwoColor[2] = 0;
+    playerInstances[1].ColorString = "Gelb";
+
   }
   else if(colorPlayerOne == "rot" && colorPlayerTwo == "gelb")
   {
     menuPlayerOneColor[0] = 254;
     menuPlayerOneColor[1] = 0;
     menuPlayerOneColor[2] = 0;
+    playerInstances[0].ColorString = "Rot";
+
 
     menuPlayerTwoColor[0] = 254;
     menuPlayerTwoColor[1] = 254;
     menuPlayerTwoColor[2] = 0;
+    playerInstances[1].ColorString = "Gelb";
+
   }
   else if(colorPlayerOne == "random" && colorPlayerTwo == "random")
   {
@@ -2576,11 +2603,15 @@ void changeColors(String colorPlayerOne, String colorPlayerTwo)
     {
       menuPlayerOneColor[i] = random(127) * 2;
     }
+    playerInstances[0].ColorString = "???";
+
 
     for(int i = 2; i >= 0; i--)
     {
       menuPlayerTwoColor[i] = random(127) * 2;
     }
+    playerInstances[1].ColorString = "???";
+
 
   }
   menuColorChosen=true;
@@ -2608,7 +2639,7 @@ void menuloop()
       if(inGame == false)
       {
         startTwoPlayerGame();
-        Serial.println("STARTED TWO PLAYER GAME");
+       //Serial.println("STARTED TWO PLAYER GAME");
       }
  }
  else if(gamestate == true && multiplayer == false)
@@ -2617,7 +2648,7 @@ void menuloop()
       if(inGame == false)
       {
         startOnePlayerGame();
-        Serial.println("STARTED ONE PLAYER GAME");
+       //Serial.println("STARTED ONE PLAYER GAME");
       }
 
  }
@@ -2903,8 +2934,8 @@ void player1screen(){
   x = 110; y = 1;
   display.setCursor(x,y);
   g = playerInstances[0].Speed;
-  Serial.print("player1screen() Speed: ");
-  Serial.println(g);
+ //Serial.print("player1screen() Speed: ");
+ //Serial.println(g);
   display.print(g);
 
   x = 1; y = 10;
@@ -2916,8 +2947,8 @@ void player1screen(){
   x = 110; y = 10;
   display.setCursor(x,y);
   r = playerInstances[0].LapCounter;
-  Serial.print("player1screen() LapCounter: ");
-  Serial.println(r);
+ //Serial.print("player1screen() LapCounter: ");
+ //Serial.println(r);
   display.print(r);
 
   x = 1; y = 19;
@@ -2928,10 +2959,25 @@ void player1screen(){
   display.print("=");
   x = 110; y = 19;
   display.setCursor(x,y);
-  rz = bestLapTime(1);
-  Serial.print("player1screen() BestLap: ");
-  Serial.println(rz);
+  rz = playerInstances[0].bestLapTime;
+ //Serial.print("player1screen() BestLap: ");
+ //Serial.println(rz);
   display.print(rz);
+  display.display();
+
+  x = 1; y = 28;
+  display.setCursor(x,y);
+  display.print("Farbe");
+  x = 100; y = 28;
+  display.setCursor(x,y);
+  display.print("=");
+  x = 110; y = 28;
+  display.setCursor(x,y);
+  rz = playerInstances[0].bestLapTime;
+ //Serial.print("player1screen() BestLap: ");
+ //Serial.println(rz);
+  String spieler1farbe = playerInstances[0].ColorString;
+  display.print(spieler1farbe);
   display.display();
 
   }
@@ -2971,9 +3017,25 @@ void player2screen(){
   display2.print("=");
   x = 110; y = 19;
   display2.setCursor(x,y);
-  rz2 = bestLapTime(2);
+  rz2 = playerInstances[1].bestLapTime;
   display2.print(rz2);
   display2.display();
+
+  x = 1; y = 28;
+  display.setCursor(x,y);
+  display.print("Farbe");
+  x = 100; y = 28;
+  display.setCursor(x,y);
+  display.print("=");
+  x = 110; y = 28;
+  display.setCursor(x,y);
+  rz = playerInstances[1].bestLapTime;
+  //Serial.print("player1screen() BestLap: ");
+  //Serial.println(rz);
+  String spieler2farbe = playerInstances[1].ColorString;
+
+  display.print(spieler2farbe);
+  display.display();
   }
 
   void readButtons(){
@@ -3075,7 +3137,7 @@ void loop()
       initGame(playerCount);
       delay(100);
 
-      Serial.println("GAME INIT DONE");
+     //Serial.println("GAME INIT DONE");
     }
 
     //gameloop
@@ -3094,5 +3156,9 @@ void loop()
       lastLoop = millis();
     }
   }
- menuloop(); // do menu stuff
+  if(millis() - menuLastLoop > menuLoopInterval)
+  {
+    menuloop(); // do menu stuff
+    menuLastLoop = millis();
+  }
 }
