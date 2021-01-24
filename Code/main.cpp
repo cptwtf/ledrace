@@ -36,8 +36,9 @@ byte menuPlayerOneColor[3];
 byte menuPlayerTwoColor[3];
 byte n ; byte m ; byte w ; bool s = 1;// menüstatevariablen
 int g = 100; int r = 11; int rz = 5; int g2 = 200; int r2 = 21; int rz2 = 15; //Spielermenüdaten
+
 //declaring prototype functions because arduino ide compiler doesnt care about order but gcc does
-//and this was quicker then reordering the menu code :p
+//and this was quicker and less error prone then reordering the menu code :p
 void display1setup();
 void display2setup();
 void player1screen();
@@ -53,7 +54,8 @@ void abfrage3();
 void abfrage4();
 void resets();
 void changeColors(String colorPlayerOne, String colorPlayerTwo);
-//following are _a lot_ of lines of pixelart bitmap arrays, jump to code line 1867 to skip
+
+//following are _a lot_ of lines of pixelart bitmap arrays, jump to code line 1872 to skip
 // Speicherung der MenueBilder im Array pixel fuer pixel
 static const uint8_t pixelartbztg[1024] = {
   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00,
