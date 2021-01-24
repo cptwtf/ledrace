@@ -2098,7 +2098,7 @@ void initGame(int playerCount)
     pixels.setPixelColor(gravityObjects[i-1][2], pixels.Color(0,254,0));
   }
   */
-  
+
   pixels.show();
   gameInitDone = true;
 }
@@ -2929,11 +2929,11 @@ void player1screen(){
   display.setTextColor(WHITE);
   int x = 1; int y = 1;
   display.setCursor(x,y);
-  display.print("Geschwindigkeit");
-  x = 100; y = 1;
+  display.print("Speed");
+  x = 90; y = 1;
   display.setCursor(x,y);
   display.print("=");
-  x = 110; y = 1;
+  x = 100; y = 1;
   display.setCursor(x,y);
   g = playerInstances[0].Speed;
  //Serial.print("player1screen() Speed: ");
@@ -2943,10 +2943,10 @@ void player1screen(){
   x = 1; y = 10;
   display.setCursor(x,y);
   display.print("Runde");
-  x = 100; y = 10;
+  x = 90; y = 10;
   display.setCursor(x,y);
   display.print("=");
-  x = 110; y = 10;
+  x = 100; y = 10;
   display.setCursor(x,y);
   r = playerInstances[0].LapCounter;
  //Serial.print("player1screen() LapCounter: ");
@@ -2956,10 +2956,10 @@ void player1screen(){
   x = 1; y = 19;
   display.setCursor(x,y);
   display.print("Rundenrekord");
-  x = 100; y = 19;
+  x = 90; y = 19;
   display.setCursor(x,y);
   display.print("=");
-  x = 110; y = 19;
+  x = 100; y = 19;
   display.setCursor(x,y);
   rz = playerInstances[0].bestLapTime;
  //Serial.print("player1screen() BestLap: ");
@@ -2970,10 +2970,10 @@ void player1screen(){
   x = 1; y = 28;
   display.setCursor(x,y);
   display.print("Farbe");
-  x = 100; y = 28;
+  x = 90; y = 28;
   display.setCursor(x,y);
   display.print("=");
-  x = 110; y = 28;
+  x = 100; y = 28;
   display.setCursor(x,y);
   rz = playerInstances[0].bestLapTime;
  //Serial.print("player1screen() BestLap: ");
@@ -2991,11 +2991,11 @@ void player2screen(){
   display2.setTextColor(WHITE);
   int x = 1; int y = 1;
   display2.setCursor(x,y);
-  display2.print("Geschwindigkeit");
-  x = 100; y = 1;
+  display2.print("Speed");
+  x = 90; y = 1;
   display2.setCursor(x,y);
   display2.print("=");
-  x = 110; y = 1;
+  x = 100; y = 1;
   display2.setCursor(x,y);
   g2 = playerInstances[1].Speed;
   display2.print(g2);
@@ -3003,10 +3003,10 @@ void player2screen(){
   x = 1; y = 10;
   display2.setCursor(x,y);
   display2.print("Runde");
-  x = 100; y = 10;
+  x = 90; y = 10;
   display2.setCursor(x,y);
   display2.print("=");
-  x = 110; y = 10;
+  x = 100; y = 10;
   display2.setCursor(x,y);
   r2 = playerInstances[1].LapCounter;
   display2.print(r2);
@@ -3014,10 +3014,10 @@ void player2screen(){
   x = 1; y = 19;
   display2.setCursor(x,y);
   display2.print("Rundenrekord");
-  x = 100; y = 19;
+  x = 90; y = 19;
   display2.setCursor(x,y);
   display2.print("=");
-  x = 110; y = 19;
+  x = 100; y = 19;
   display2.setCursor(x,y);
   rz2 = playerInstances[1].bestLapTime;
   display2.print(rz2);
@@ -3026,10 +3026,10 @@ void player2screen(){
   x = 1; y = 28;
   display.setCursor(x,y);
   display.print("Farbe");
-  x = 100; y = 28;
+  x = 90; y = 28;
   display.setCursor(x,y);
   display.print("=");
-  x = 110; y = 28;
+  x = 100; y = 28;
   display.setCursor(x,y);
   rz = playerInstances[1].bestLapTime;
   //Serial.print("player1screen() BestLap: ");
