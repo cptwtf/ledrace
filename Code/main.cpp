@@ -3036,8 +3036,6 @@ void player2screen(){
 
   display.print(spieler2farbe);
   display.display();
-
-  }
   }
 
   void readButtons(){
