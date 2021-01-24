@@ -7,12 +7,11 @@
   #include <avr/power.h>
 #endif
 
-//PINS kevins setup: pin:2   player1:15     player2: 4
-//PINS remote setup: pin:16    player1: 2     player2:13
+
 #define PIN               16     //LED Strip data pin
-#define PLAYERONEBUTTONPIN   13
-#define PLAYERTWOBUTTONPIN 2
-#define NUMPIXELS         300
+#define PLAYERONEBUTTONPIN   13  // Player 1 Controller Input Pin
+#define PLAYERTWOBUTTONPIN 2     // Playwer 2 Controller Input Pin
+#define NUMPIXELS         300   // LED Count
 #define SCREEN_WIDTH 128 // Set OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // Set LED display height, in pixels
 
