@@ -12,7 +12,9 @@ dont forget!
 
 - game end effect
 - finish line cross effect needs rework? potential crash
-- fix color anzeige
+
+//just for testing remove this
+
 
 
 didnt forget :p
