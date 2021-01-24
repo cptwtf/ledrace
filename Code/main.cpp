@@ -1905,6 +1905,7 @@ class Player {
     bool isActive = true;
     bool reachedMaxLaps = false;
     bool isTheWinner = true;
+    String ColorString;
 
     void setColor(int R, int G, int B)
     {
@@ -1993,6 +1994,7 @@ void initGame(int playerCount)
     else
     {
       player1.setColor(0, 0, 254);
+      player1.ColorString = "Blau";
     }
     player1.buttonPin = PLAYERONEBUTTONPIN;
     playerInstances[0] = player1;
@@ -2011,6 +2013,7 @@ void initGame(int playerCount)
     else
     {
       player1.setColor(0, 0, 254);
+      player1.ColorString = "Blau";
     }
 
     player1.buttonPin = PLAYERONEBUTTONPIN;
@@ -2026,6 +2029,7 @@ void initGame(int playerCount)
     else
     {
       player2.setColor(254, 0, 0);
+      player2.ColorString = "Rot";
     }
 
     player2.buttonPin = PLAYERTWOBUTTONPIN;
@@ -2554,30 +2558,41 @@ void changeColors(String colorPlayerOne, String colorPlayerTwo)
     menuPlayerOneColor[0] = 254;
     menuPlayerOneColor[1] = 0;
     menuPlayerOneColor[2] = 0;
+    playerInstances[0].ColorString = "Rot";
 
     menuPlayerTwoColor[0] = 0;
     menuPlayerTwoColor[1] = 0;
     menuPlayerTwoColor[2] = 254;
+    playerInstances[1].ColorString = "Blau";
+
   }
   else if(colorPlayerOne == "blau" && colorPlayerTwo == "gelb")
   {
     menuPlayerOneColor[0] = 0;
     menuPlayerOneColor[1] = 0;
     menuPlayerOneColor[2] = 254;
+    playerInstances[0].ColorString = "Blau";
+
 
     menuPlayerTwoColor[0] = 254;
     menuPlayerTwoColor[1] = 254;
     menuPlayerTwoColor[2] = 0;
+    playerInstances[1].ColorString = "Gelb";
+
   }
   else if(colorPlayerOne == "rot" && colorPlayerTwo == "gelb")
   {
     menuPlayerOneColor[0] = 254;
     menuPlayerOneColor[1] = 0;
     menuPlayerOneColor[2] = 0;
+    playerInstances[0].ColorString = "Rot";
+
 
     menuPlayerTwoColor[0] = 254;
     menuPlayerTwoColor[1] = 254;
     menuPlayerTwoColor[2] = 0;
+    playerInstances[1].ColorString = "Gelb";
+
   }
   else if(colorPlayerOne == "random" && colorPlayerTwo == "random")
   {
@@ -2588,11 +2603,15 @@ void changeColors(String colorPlayerOne, String colorPlayerTwo)
     {
       menuPlayerOneColor[i] = random(127) * 2;
     }
+    playerInstances[0].ColorString = "???";
+
 
     for(int i = 2; i >= 0; i--)
     {
       menuPlayerTwoColor[i] = random(127) * 2;
     }
+    playerInstances[1].ColorString = "???";
+
 
   }
   menuColorChosen=true;
@@ -2957,6 +2976,7 @@ void player1screen(){
   rz = playerInstances[0].bestLapTime;
  //Serial.print("player1screen() BestLap: ");
  //Serial.println(rz);
+  String spieler1farbe = playerInstances[0].ColorString;
   display.print(spieler1farbe);
   display.display();
 
@@ -3009,9 +3029,11 @@ void player2screen(){
   display.print("=");
   x = 110; y = 28;
   display.setCursor(x,y);
-  rz = playerInstances[0].bestLapTime;
- //Serial.print("player1screen() BestLap: ");
- //Serial.println(rz);
+  rz = playerInstances[1].bestLapTime;
+  //Serial.print("player1screen() BestLap: ");
+  //Serial.println(rz);
+  String spieler2farbe = playerInstances[1].ColorString;
+
   display.print(spieler2farbe);
   display.display();
 
