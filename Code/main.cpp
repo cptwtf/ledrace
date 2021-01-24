@@ -8,7 +8,7 @@
 #endif
 
 
-#define PIN               16     //LED Strip data pin
+#define PIN               10     //LED Strip data pin
 #define PLAYERONEBUTTONPIN   13  // Player 1 Controller Input Pin
 #define PLAYERTWOBUTTONPIN 2     // Playwer 2 Controller Input Pin
 #define NUMPIXELS         300   // LED Count
@@ -1928,7 +1928,7 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 //[objectNumber]
 //            [start][topmost][end][intensity]
 const int gravityObjectsCount = 12;
-int gravityObjects[gravityObjectsCount][4] = {{9,13,13,5},{27,27,33,5}, {52,107,107,9}, {110,110,115,9}, {120,129,129,13}, {130,130,139,13}, {144,150,150,5}, {163,163,168,5}, {172,185,185,13}, {186,186,198,13}, {201,207,207,5}, {220,220,226,5} };
+int gravityObjects[gravityObjectsCount][4] = {{9,13,13,3},{27,27,33,3}, {52,107,107,7}, {110,110,115,7}, {120,129,129,8}, {130,130,139,8}, {144,150,150,5}, {163,163,168,5}, {172,185,185,13}, {186,186,198,13}, {201,207,207,5}, {220,220,226,5} };
 
 unsigned long menuLastLoop = 0;
 const long menuLoopInterval = 128;
@@ -2184,7 +2184,7 @@ void draw(Player &player)
 
          //merge colors
          mixedCol[0] = (mixedCol[0] + playerColorArrayRGB[0]) / 2;
-      	 mixedCol[1] = (mixedCol[1] + playerColorArrayRGB[1]) / 2;
+         mixedCol[1] = (mixedCol[1] + playerColorArrayRGB[1]) / 2;
          mixedCol[2] = (mixedCol[2] + playerColorArrayRGB[2]) / 2;
 
          //set mixed color
@@ -2254,7 +2254,7 @@ void draw(Player &player)
 
                //merge colors
                mixedCol[0] = (mixedCol[0] + playerColorArrayRGB[0]) / 2;
-            	 mixedCol[1] = (mixedCol[1] + playerColorArrayRGB[1]) / 2;
+               mixedCol[1] = (mixedCol[1] + playerColorArrayRGB[1]) / 2;
                mixedCol[2] = (mixedCol[2] + playerColorArrayRGB[2]) / 2;
 
                //set mixed color
