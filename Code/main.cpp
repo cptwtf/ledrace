@@ -2090,13 +2090,15 @@ void initGame(int playerCount)
   pixels.setPixelColor(0, pixels.Color(0,0,0));
 
   //draw "physics" test boundaries
+  /*
   for(int i = gravityObjectsCount; i > 0; i--)
   {
     pixels.setPixelColor(gravityObjects[i-1][0], pixels.Color(0,254,0));
     pixels.setPixelColor(gravityObjects[i-1][1], pixels.Color(0,254,0));
     pixels.setPixelColor(gravityObjects[i-1][2], pixels.Color(0,254,0));
   }
-
+  */
+  
   pixels.show();
   gameInitDone = true;
 }
