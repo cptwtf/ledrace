@@ -2975,9 +2975,6 @@ void player1screen(){
   display.print("=");
   x = 90; y = 28;
   display.setCursor(x,y);
-  rz = playerInstances[0].bestLapTime;
- //Serial.print("player1screen() BestLap: ");
- //Serial.println(rz);
   String spieler1farbe = playerInstances[0].ColorString;
   display.print(spieler1farbe);
   display.display();
@@ -3031,13 +3028,9 @@ void player2screen(){
   display2.print("=");
   x = 90; y = 28;
   display2.setCursor(x,y);
-  rz = playerInstances[1].bestLapTime;
-  //Serial.print("player1screen() BestLap: ");
-  //Serial.println(rz);
   String spieler2farbe = playerInstances[1].ColorString;
-
-  display.print(spieler2farbe);
-  display.display();
+  display2.print(spieler2farbe);
+  display2.display();
   }
 
   void readButtons(){
