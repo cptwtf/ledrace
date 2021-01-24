@@ -2097,6 +2097,12 @@ void initGame(int playerCount)
     pixels.setPixelColor(gravityObjects[i-1][2], pixels.Color(0,254,0));
   }
 
+  //draw every 10 white
+  for(int i = 0; i < 290; i += 10)
+  {
+    pixels.setPixelColor(i, pixels.Color(254,254,254));
+  }
+  
   pixels.show();
   gameInitDone = true;
 }
