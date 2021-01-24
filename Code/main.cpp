@@ -2474,10 +2474,16 @@ void update(Player &player)
         gameWon = true;
         player.isTheWinner = true;
 
-        for(int i = NUMPIXELS - 1; i > 1; i -= 2)
+        byte dimmedWinnerColorArray[3];
+
+        for(int i = 2; i >= 0; i--)
         {
-          pixels.setPixelColor(i, pixels.Color(254,0,0));
+          dimmedWinnerColorArray[i] = player.ColorArrayRGB[i] / 8;
         }
+
+        uint32_t dimmedWinnerColor = pixels.Color(dimmedWinnerColorArray[0], dimmedWinnerColorArray[1], dimmedWinnerColorArray[2]);
+
+        pixels.fill(dimmedWinnerColor);
         pixels.show();
       }
     }
