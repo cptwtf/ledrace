@@ -1938,8 +1938,9 @@ bool finishLineHelperFlag = false;
 
 bool gameInitDone = false;
 bool inMenu = false;
-bool inGame = true;
+bool inGame = false;
 bool gameWon = false;
+
 
 void setup() {
 #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
