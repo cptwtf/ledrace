@@ -1,0 +1,34 @@
+Aufgabenverteilung
+Vorbereitung Programme
+3D-Modelle
+	größe Festlegen
+	Hauptstreckenelement
+	Kurven
+	Extraelemente
+	Elektronikbox
+	Spielerbuttons
+
+Programmierung - Display
+	Menu auf Hauptbildschirm
+	Rundenanzahl für Spielerbildschirme
+	Zeit für Spielerbildschirme
+	Position für Spielerbildschirme
+
+
+Programmierung - LED-Streifen
+	LED ansteuern
+	Spieler per Knopfdruck bewegen
+	Physik "simulation"
+	Physik bei Bergen
+	Rundensystem
+
+
+Programmierung - Beat
+	Beat erstellen
+	Beat über Mikrocontroller wiedergeben
+	Je nach rhythmus beschleunigen/ verlangsamen
+	Beat über Displays "darstellen"
+
+Dokumentation
+	Video erstellen
+	Dokumentation erstellen
