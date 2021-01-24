@@ -1896,7 +1896,7 @@ class Player {
     int buttonPin;
     bool buttonIsDown = false;
     int LapCounter = 0;
-    unsigned long LapTimesArray[10];
+    unsigned long LapTimesArray[10] = {0,0,0,0,0,0,0,0,0,0};
     bool crossedLine = false;
     unsigned long lastSpeedDecay = 0;
     bool skipSpeedDecayOnce = false;
@@ -2512,31 +2512,26 @@ void update(Player &player)
 
 }
 
-long int bestLapTime(int playerNumber)
+float bestLapTime(int playerNumber)
 {
-  long int bestLap = 9999;
+  float bestLap = 9999;
 
-  if(playerNumber == 1)
+  if(playerInstances[playerNumber -1].LapTimesArray[1] != 0)
   {
-    for(int i = maxLaps; i >= 1; i--)
+    for(int i =  maxLaps; i > 0; i--)
     {
-      if(player1.LapTimesArray[i] \ 1000 < bestLap)
+      if(playerInstances[playerNumber-1].LapTimesArray[i] > 0 && playerInstances[playerNumber-1].LapTimesArray[i] / 1000 < bestLap)
       {
-        bestLap = player1.LapTimesArray[i] \ 1000;
+        bestLap = playerInstances[playerNumber-1].LapTimesArray[i] / 1000;
       }
     }
   }
-  else if(playerNumber == 2)
+  else
   {
-    for(int i = maxLaps; i >= 1; i--)
-    {
-      if(player2.LapTimesArray[i] \ 1000 < bestLap)
-      {
-        bestLap = player1.LapTimesArray[i] \ 1000;
-      }
-    }
+    bestLap = 0;
   }
-
+  Serial.print("bestLapTime() returns: ");
+  Serial.print(bestLap);
   return bestLap;
 }
 
@@ -2907,7 +2902,9 @@ void player1screen(){
   display.print("=");
   x = 110; y = 1;
   display.setCursor(x,y);
-  g = player1.Speed;
+  g = playerInstances[0].Speed;
+  Serial.print("player1screen() Speed: ");
+  Serial.println(g);
   display.print(g);
 
   x = 1; y = 10;
@@ -2918,7 +2915,9 @@ void player1screen(){
   display.print("=");
   x = 110; y = 10;
   display.setCursor(x,y);
-  r = player1.LapCounter;
+  r = playerInstances[0].LapCounter;
+  Serial.print("player1screen() LapCounter: ");
+  Serial.println(r);
   display.print(r);
 
   x = 1; y = 19;
@@ -2930,6 +2929,8 @@ void player1screen(){
   x = 110; y = 19;
   display.setCursor(x,y);
   rz = bestLapTime(1);
+  Serial.print("player1screen() BestLap: ");
+  Serial.println(rz);
   display.print(rz);
   display.display();
 
@@ -2948,7 +2949,7 @@ void player2screen(){
   display2.print("=");
   x = 110; y = 1;
   display2.setCursor(x,y);
-  g2 = player2.Speed;
+  g2 = playerInstances[1].Speed;
   display2.print(g2);
 
   x = 1; y = 10;
@@ -2959,7 +2960,7 @@ void player2screen(){
   display2.print("=");
   x = 110; y = 10;
   display2.setCursor(x,y);
-  r2 = player2.LapCounter;
+  r2 = playerInstances[1].LapCounter;
   display2.print(r2);
 
   x = 1; y = 19;
