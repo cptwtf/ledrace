@@ -1,0 +1,35 @@
+1min Werbung
+MIT DEM LEUCHTDIODENRASER rast nicht nur das LICHT, sondern auch dein Spielerlebnis ans neue LIMIT
+TEILE DEIN SPIELERLEBNIS mit einer weiteren Person und rast Gegeneinander in dieser KRASSEN LICHTSHOW. 
+( zeige overview von oben vom Projekt und blende Schlagworte wie im comic zu den Wörtern in Großbuchstaben ein (video bleibt währenddessen im Hintergrund))
+
+All dies ist möglich mit dem ( technische Daten Mikrocontroller und oleddisplay und leuchtstreifen)
+
+Wähle zwischen einzel und multispieler , Farboptionen oder Infos zu uns.
+(Bei den jeweiligen auschlagsworten den jeweiligen Abschnitt zeigen)
+
+Wir sind  Kevin Florian Dennis und sind an der Bztg oldenburg als infornationstechnische Assistenten ausgebildet worden.
+
+
+10min Video
+
+Werbung laufen lassen
+
+Projekt erklären
+	-Idee des Projekts
+	-Ramen des Projekts
+	-Ablauf
+	
+		-Kevins Part
+			-Wie Funktioniert was
+			-(Wenn Spieler auf Button drückt wird led vortbewegt)
+			-(Wenn Kart auf Looping trifft dies das)
+		-Dennis Part
+			-Was die Displays machen
+		-Florian
+			-(Damit LED-Streifen nicht in der Luft hängt/ Feste Installation)
+			-Elemente vorstellen (Grade/Kurve)
+			-ElektronikBox um Platine zu "Lagern"
+	-Wo ist das Projekt zu finden (ledrace.florianauschra.de)
+	
+		
