@@ -1,18 +1,25 @@
 dont forget!
 
-- fix draw logic when logicupdate +4 strip ending
+- fix draw logic when logicupdate +4 strip ending << !! for real
+- recheck moving trough strip ending backwards
 - maybe reorder position logic conditions for efficiency
-- rolling power for backwards movement and fix forward rolling after backward movement
 - change magic numbers in position update logic to be derived from constant
-- speed decay formular rework
-- finish line cross effect
+- add speed < ~15 move only every second update
+- rework speed boundaries
+- benchmark and performance optimization
+- code cleanup
+- gravity topmost checks for first entity pixel instead of middle
+
 - game end effect
-
-
+- finish line cross effect needs rework? potential crash
 
 
 
 didnt forget :p
+- lol you can cheat lap system by going back and forth over finish line :d << DONE
+- two player system << DONE
+- rolling power for backwards movement and fix forward rolling after backward movement << DONE was cut during physics rework
+- speed decay formular rework << DONE
 - cap negative speed << DONE
 - fix color ghosting bug when moving backwards << DONE
 - fix logic bug when crossing strip ending backwards << DONE
