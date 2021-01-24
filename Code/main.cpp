@@ -2946,6 +2946,20 @@ void player1screen(){
   display.print(rz);
   display.display();
 
+  x = 1; y = 28;
+  display.setCursor(x,y);
+  display.print("Farbe");
+  x = 100; y = 28;
+  display.setCursor(x,y);
+  display.print("=");
+  x = 110; y = 28;
+  display.setCursor(x,y);
+  rz = playerInstances[0].bestLapTime;
+ //Serial.print("player1screen() BestLap: ");
+ //Serial.println(rz);
+  display.print(spieler1farbe);
+  display.display();
+
   }
 
 void player2screen(){
@@ -2986,6 +3000,22 @@ void player2screen(){
   rz2 = playerInstances[1].bestLapTime;
   display2.print(rz2);
   display2.display();
+
+  x = 1; y = 28;
+  display.setCursor(x,y);
+  display.print("Farbe");
+  x = 100; y = 28;
+  display.setCursor(x,y);
+  display.print("=");
+  x = 110; y = 28;
+  display.setCursor(x,y);
+  rz = playerInstances[0].bestLapTime;
+ //Serial.print("player1screen() BestLap: ");
+ //Serial.println(rz);
+  display.print(spieler2farbe);
+  display.display();
+
+  }
   }
 
   void readButtons(){
