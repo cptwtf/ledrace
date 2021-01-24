@@ -7,12 +7,11 @@
   #include <avr/power.h>
 #endif
 
-//PINS kevins setup: pin:2   player1:15     player2: 4
-//PINS remote setup: pin:16    player1: 2     player2:13
+
 #define PIN               16     //LED Strip data pin
-#define PLAYERONEBUTTONPIN   13
-#define PLAYERTWOBUTTONPIN 2
-#define NUMPIXELS         300
+#define PLAYERONEBUTTONPIN   13  // Player 1 Controller Input Pin
+#define PLAYERTWOBUTTONPIN 2     // Playwer 2 Controller Input Pin
+#define NUMPIXELS         300   // LED Count
 #define SCREEN_WIDTH 128 // Set OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // Set LED display height, in pixels
 
@@ -37,8 +36,9 @@ byte menuPlayerOneColor[3];
 byte menuPlayerTwoColor[3];
 byte n ; byte m ; byte w ; bool s = 1;// menüstatevariablen
 int g = 100; int r = 11; int rz = 5; int g2 = 200; int r2 = 21; int rz2 = 15; //Spielermenüdaten
+
 //declaring prototype functions because arduino ide compiler doesnt care about order but gcc does
-//and this was quicker then reordering the menu code :p
+//and this was quicker and less error prone then reordering the menu code :p
 void display1setup();
 void display2setup();
 void player1screen();
@@ -54,7 +54,8 @@ void abfrage3();
 void abfrage4();
 void resets();
 void changeColors(String colorPlayerOne, String colorPlayerTwo);
-//following are _a lot_ of lines of pixelart bitmap arrays, jump to code line 1867 to skip
+
+//following are _a lot_ of lines of pixelart bitmap arrays, jump to code line 1872 to skip
 // Speicherung der MenueBilder im Array pixel fuer pixel
 static const uint8_t pixelartbztg[1024] = {
   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -1895,7 +1896,7 @@ class Player {
     int buttonPin;
     bool buttonIsDown = false;
     int LapCounter = 0;
-    unsigned long LapTimesArray[10];
+    unsigned long LapTimesArray[10] = {0,0,0,0,0,0,0,0,0,0};
     bool crossedLine = false;
     unsigned long lastSpeedDecay = 0;
     bool skipSpeedDecayOnce = false;
@@ -1939,8 +1940,9 @@ bool finishLineHelperFlag = false;
 
 bool gameInitDone = false;
 bool inMenu = false;
-bool inGame = true;
+bool inGame = false;
 bool gameWon = false;
+
 
 void setup() {
 #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
@@ -2510,31 +2512,26 @@ void update(Player &player)
 
 }
 
-long int bestLapTime(int playerNumber)
+float bestLapTime(int playerNumber)
 {
-  long int bestLap = 9999;
+  float bestLap = 9999;
 
-  if(playerNumber == 1)
+  if(playerInstances[playerNumber -1].LapTimesArray[1] != 0)
   {
-    for(int i = maxLaps; i >= 1; i--)
+    for(int i =  maxLaps; i > 0; i--)
     {
-      if(player1.LapTimesArray[i] \ 1000 < bestLap)
+      if(playerInstances[playerNumber-1].LapTimesArray[i] > 0 && playerInstances[playerNumber-1].LapTimesArray[i] / 1000 < bestLap)
       {
-        bestLap = player1.LapTimesArray[i] \ 1000;
+        bestLap = playerInstances[playerNumber-1].LapTimesArray[i] / 1000;
       }
     }
   }
-  else if(playerNumber == 2)
+  else
   {
-    for(int i = maxLaps; i >= 1; i--)
-    {
-      if(player2.LapTimesArray[i] \ 1000 < bestLap)
-      {
-        bestLap = player1.LapTimesArray[i] \ 1000;
-      }
-    }
+    bestLap = 0;
   }
-
+  Serial.print("bestLapTime() returns: ");
+  Serial.print(bestLap);
   return bestLap;
 }
 
@@ -2905,7 +2902,9 @@ void player1screen(){
   display.print("=");
   x = 110; y = 1;
   display.setCursor(x,y);
-  g = player1.Speed;
+  g = playerInstances[0].Speed;
+  Serial.print("player1screen() Speed: ");
+  Serial.println(g);
   display.print(g);
 
   x = 1; y = 10;
@@ -2916,7 +2915,9 @@ void player1screen(){
   display.print("=");
   x = 110; y = 10;
   display.setCursor(x,y);
-  r = player1.LapCounter;
+  r = playerInstances[0].LapCounter;
+  Serial.print("player1screen() LapCounter: ");
+  Serial.println(r);
   display.print(r);
 
   x = 1; y = 19;
@@ -2928,6 +2929,8 @@ void player1screen(){
   x = 110; y = 19;
   display.setCursor(x,y);
   rz = bestLapTime(1);
+  Serial.print("player1screen() BestLap: ");
+  Serial.println(rz);
   display.print(rz);
   display.display();
 
@@ -2946,7 +2949,7 @@ void player2screen(){
   display2.print("=");
   x = 110; y = 1;
   display2.setCursor(x,y);
-  g2 = player2.Speed;
+  g2 = playerInstances[1].Speed;
   display2.print(g2);
 
   x = 1; y = 10;
@@ -2957,7 +2960,7 @@ void player2screen(){
   display2.print("=");
   x = 110; y = 10;
   display2.setCursor(x,y);
-  r2 = player2.LapCounter;
+  r2 = playerInstances[1].LapCounter;
   display2.print(r2);
 
   x = 1; y = 19;
