@@ -1927,8 +1927,8 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 //"gravity" objects
 //[objectNumber]
 //            [start][topmost][end][intensity]
-const int gravityObjectsCount = 2;
-int gravityObjects[gravityObjectsCount][4] = {{19,41,69,6},{82,126,204,5}};
+const int gravityObjectsCount = 12;
+int gravityObjects[gravityObjectsCount][4] = {{9,13,13,5},{27,27,33,5}, {52,107,107,9}, {110,110,115,9}, {120,129,129,13}, {130,130,139,13}, {144,150,150,5}, {163,163,168,5}, {172,185,185,13}, {186,186,198,13}, {201,207,207,5}, {220,220,226,5} };
 
 unsigned long menuLastLoop = 0;
 const long menuLoopInterval = 128;
