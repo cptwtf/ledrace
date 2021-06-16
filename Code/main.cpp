@@ -10,7 +10,8 @@
 
 #define PIN               10     //LED Strip data pin
 #define PLAYERONEBUTTONPIN   13  // Player 1 Controller Input Pin
-#define PLAYERTWOBUTTONPIN 2     // Playwer 2 Controller Input Pin
+#define PLAYERTWOBUTTONPIN 2     // Player 2 Controller Input Pin
+#define PLAYERTHREEBUTTONPIN 4  // Player 3 Controller Input Pin
 #define NUMPIXELS         300   // LED Count
 #define SCREEN_WIDTH 128 // Set OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // Set LED display height, in pixels
@@ -31,6 +32,7 @@ unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 500;
 bool gamestate = false; // gamestatus
 bool multiplayer = false;
+bool thirdPlayer = false;
 bool menuColorChosen = false;
 byte menuPlayerOneColor[3];
 byte menuPlayerTwoColor[3];
@@ -1916,7 +1918,7 @@ class Player {
     }
 };
 
-Player playerInstances[2];
+Player playerInstances[3];
 
 const int MAX_SPEED = 100;
 const int SPEED30PERCENT = MAX_SPEED / 100 * 30;
@@ -2022,6 +2024,7 @@ void initGame(int playerCount)
     //create player2 object and put in array
     Player player2;
 
+
     if(menuColorChosen == true)
     {
       player2.setColor(menuPlayerTwoColor[0], menuPlayerTwoColor[1], menuPlayerTwoColor[2]);
@@ -2041,6 +2044,58 @@ void initGame(int playerCount)
     mixedColorsArray[2] = (playerInstances[0].ColorArrayRGB[2] + playerInstances[1].ColorArrayRGB[2]) / 2;
 
   }
+  else if(playerCount == 3)
+  {
+    //create player1 object and put in array
+    Player player1;
+
+
+    if(menuColorChosen == true)
+    {
+      player1.setColor(menuPlayerOneColor[0], menuPlayerOneColor[1], menuPlayerOneColor[2]);
+    }
+    else
+    {
+      player1.setColor(0, 0, 254);
+      player1.ColorString = "Blau";
+    }
+
+    player1.buttonPin = PLAYERONEBUTTONPIN;
+    playerInstances[0] = player1;
+
+    //create player2 object and put in array
+    Player player2;
+
+
+    if(menuColorChosen == true)
+    {
+      player2.setColor(menuPlayerTwoColor[0], menuPlayerTwoColor[1], menuPlayerTwoColor[2]);
+    }
+    else
+    {
+      player2.setColor(254, 0, 0);
+      player2.ColorString = "Rot";
+    }
+
+    player2.buttonPin = PLAYERTWOBUTTONPIN;
+    playerInstances[1] = player2;
+
+    //create player3 object and put in array
+    Player player3;
+
+    player3.setColor(0, 254, 254);
+    player3.ColorString = "Grün";
+
+
+    player3.buttonPin = PLAYERTHREEBUTTONPIN;
+    playerInstances[2] = player3;
+
+    //mix player colors
+    mixedColorsArray[0] = (playerInstances[0].ColorArrayRGB[0] + playerInstances[1].ColorArrayRGB[0] + playerInstances[2].ColorArrayRGB[0]) / 3;
+    mixedColorsArray[1] = (playerInstances[0].ColorArrayRGB[1] + playerInstances[1].ColorArrayRGB[1] + playerInstances[2].ColorArrayRGB[1]) / 3;
+    mixedColorsArray[2] = (playerInstances[0].ColorArrayRGB[2] + playerInstances[1].ColorArrayRGB[2] + playerInstances[2].ColorArrayRGB[2]) / 3;
+
+  }
   else
   {
     //something wrent wrong :p
@@ -2057,9 +2112,9 @@ void initGame(int playerCount)
                              playerInstances[0].ColorArrayRGB[2]));
     }
   }
-  else if(playerCount == 2) //draw "both" players by mixing their color
+  else if(playerCount > 1) //draw all players by mixing their color
   {
-    for(int j = 2; j >= 0; j--)
+    for(int j = playerCount; j > 0; j--)
     {
       pixels.setPixelColor(playerInstances[0].DrawPosition - j,
                 pixels.Color(mixedColorsArray[0],
@@ -2632,9 +2687,25 @@ void startTwoPlayerGame()
   inGame = true;
 }
 
+void startThreePlayerGame()
+{
+  playerCount = 3;
+  inGame = true;
+}
+
 void menuloop()
 {
- if (gamestate == true && multiplayer == true)
+ if(gamestate == true && multiplayer == true && thirdPlayer == true)
+ {
+   player1screen();
+   player2screen();
+   if(inGame == false)
+   {
+     startThreePlayerGame();
+    //Serial.println("STARTED THREE PLAYER GAME");
+   }
+ }
+ else if(gamestate == true && multiplayer == true)
  {
       player1screen();
       player2screen();
@@ -2721,6 +2792,9 @@ while(m == 1 && w > 1|| m < 1 && w > 1 || m == 6 && w > 1 || m > 6 && w > 1)//st
   display.clearDisplay();
   display.drawBitmap(0,0, spielenmenuart2, 128, 64, 1);
   display.display();
+
+  //Dritten Spieler durch Tastendruck während Bestätigen/Abbrechen-prompt anmelden
+  if(digitalRead(PLAYERTHREEBUTTONPIN == 1)) { thirdPlayer = true; }
   abfrage2();
 }
  while(m == 2 && w == 2 && s == 0)//multispieler NEIN
@@ -2729,6 +2803,8 @@ while(m == 1 && w > 1|| m < 1 && w > 1 || m == 6 && w > 1 || m > 6 && w > 1)//st
   display.clearDisplay();
   display.drawBitmap(0,0, spielenmenuart3, 128, 64, 1);
   display.display();
+  //Dritten Spieler durch Tastendruck während Bestätigen/Abbrechen-prompt anmelden
+  if(digitalRead(PLAYERTHREEBUTTONPIN == 1)) { thirdPlayer = true; }
   abfrage2();
 }
 while(m == 2 && w == 3)//mutliplayer Logo
