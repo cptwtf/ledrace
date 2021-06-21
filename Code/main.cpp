@@ -1931,7 +1931,7 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 //[objectNumber]
 //            [start][topmost][end][intensity]
 const int gravityObjectsCount = 12;
-int gravityObjects[gravityObjectsCount][4] = {{9,13,13,1},{27,27,33,1}, {52,107,107,5}, {110,110,115,5}, {120,129,129,7}, {130,130,139,7}, {144,150,150,1}, {163,163,168,1}, {172,185,185,13}, {186,186,198,13}, {201,207,207,1}, {220,220,226,1} };
+int gravityObjects[gravityObjectsCount][4] = {{9,13,13,0},{27,27,33,0}, {52,107,107,7}, {110,110,115,7}, {120,129,129,9}, {130,130,139,9}, {144,150,150,1}, {163,163,168,1}, {172,185,185,15}, {186,186,198,15}, {201,207,207,1}, {220,220,226,1} };
 
 unsigned long menuLastLoop = 0;
 const long menuLoopInterval = 128;
@@ -2715,7 +2715,7 @@ void menuloop()
       if(inGame == false)
       {
         startTwoPlayerGame();
-       //Serial.println("STARTED TWO PLAYER GAME");
+      // Serial.println("STARTED TWO PLAYER GAME");
       }
  }
  else if(gamestate == true && multiplayer == false)
@@ -2797,7 +2797,7 @@ while(m == 1 && w > 1|| m < 1 && w > 1 || m == 6 && w > 1 || m > 6 && w > 1)//st
   display.display();
 
   //Dritten Spieler durch Tastendruck während Bestätigen/Abbrechen-prompt anmelden
-  if(digitalRead(PLAYERTHREEBUTTONPIN == 1)) { thirdPlayer = true; }
+  if(digitalRead(PLAYERTHREEBUTTONPIN) == 1) { thirdPlayer = true; }
   abfrage2();
 }
  while(m == 2 && w == 2 && s == 0)//multispieler NEIN
@@ -2807,7 +2807,7 @@ while(m == 1 && w > 1|| m < 1 && w > 1 || m == 6 && w > 1 || m > 6 && w > 1)//st
   display.drawBitmap(0,0, spielenmenuart3, 128, 64, 1);
   display.display();
   //Dritten Spieler durch Tastendruck während Bestätigen/Abbrechen-prompt anmelden
-  if(digitalRead(PLAYERTHREEBUTTONPIN == 1)) { thirdPlayer = true; }
+  if(digitalRead(PLAYERTHREEBUTTONPIN) == 1) { thirdPlayer = true; }
   abfrage2();
 }
 while(m == 2 && w == 3)//mutliplayer Logo
