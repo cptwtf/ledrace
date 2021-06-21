@@ -1974,6 +1974,7 @@ void setup() {
   //led strip stuff
   pinMode(PLAYERONEBUTTONPIN, INPUT);
   pinMode(PLAYERTWOBUTTONPIN, INPUT);
+  pinMode(PLAYERTHREEBUTTONPIN, INPUT);
 
   pixels.begin();
   pixels.clear();
@@ -2083,7 +2084,7 @@ void initGame(int playerCount)
     //create player3 object and put in array
     Player player3;
 
-    player3.setColor(0, 254, 254);
+    player3.setColor(0, 254, 0);
     player3.ColorString = "Grün";
 
 
@@ -2131,9 +2132,9 @@ void initGame(int playerCount)
 
   //set boundaries for lap flag Reset
   lapFlagResetLow  = startFinishLine + NUMPIXELS / 2 - 5;
-  if(lapFlagResetLow > 299 ) { lapFlagResetLow -= 299;}
+  if(lapFlagResetLow > NUMPIXELS - 1 ) { lapFlagResetLow -= NUMPIXELS - 1;}
   lapFlagResetHigh = startFinishLine + NUMPIXELS / 2 + 5;
-  if(lapFlagResetHigh > 299 ) { lapFlagResetHigh -= 299;}
+  if(lapFlagResetHigh > NUMPIXELS - 1 ) { lapFlagResetHigh -= NUMPIXELS - 1;}
 
 
 
@@ -2188,10 +2189,10 @@ void draw(Player &player)
 
 
     //if player logic position is in front of current drawn position
-    if((playerDrawPositionLocal < playerLogicPosition && !(playerLogicPosition == 299 && playerDrawPositionLocal == 0)) ||
-      (playerDrawPositionLocal == 299 && playerLogicPosition <= 3) ||
-      (playerDrawPositionLocal == 298 && playerLogicPosition <= 3) ||
-      (playerDrawPositionLocal == 297 && playerLogicPosition <= 3))
+    if((playerDrawPositionLocal < playerLogicPosition && !(playerLogicPosition == NUMPIXELS - 1 && playerDrawPositionLocal == 0)) ||
+      (playerDrawPositionLocal == NUMPIXELS - 1 && playerLogicPosition <= 3) ||
+      (playerDrawPositionLocal == NUMPIXELS - 2 && playerLogicPosition <= 3) ||
+      (playerDrawPositionLocal == NUMPIXELS - 3 && playerLogicPosition <= 3))
     {
 
       //unset last entity pixel
@@ -2251,7 +2252,7 @@ void draw(Player &player)
 
        pixels.show();
        //update playerDrawPosition
-       if(playerDrawPositionLocal == 299) { playerDrawPositionLocal = 0; }
+       if(playerDrawPositionLocal == NUMPIXELS - 1) { playerDrawPositionLocal = 0; }
        else
        {
         //Serial.println("DRAW IS INCREMENTING PLAYERDRAWPOSITIONLOCAL");
@@ -2259,9 +2260,9 @@ void draw(Player &player)
        }
     } //if player entity has to be moved backwards
     else if(playerDrawPositionLocal > playerLogicPosition ||
-            (playerDrawPositionLocal == 2 && playerLogicPosition >= 296) ||
-            (playerDrawPositionLocal == 1 && playerLogicPosition >= 296) ||
-            (playerDrawPositionLocal == 0 && playerLogicPosition >= 296)   )
+            (playerDrawPositionLocal == 2 && playerLogicPosition >= NUMPIXELS - 4) ||
+            (playerDrawPositionLocal == 1 && playerLogicPosition >= NUMPIXELS - 4) ||
+            (playerDrawPositionLocal == 0 && playerLogicPosition >= NUMPIXELS - 4)   )
     {
 
             //unset front entity pixel
@@ -2321,7 +2322,7 @@ void draw(Player &player)
 
              pixels.show();
              //update playerDrawPosition
-             if(playerDrawPositionLocal == 0) { playerDrawPositionLocal = 299; }
+             if(playerDrawPositionLocal == 0) { playerDrawPositionLocal = NUMPIXELS - 1; }
              else
              {
                playerDrawPositionLocal--;
@@ -2368,12 +2369,12 @@ void update(Player &player)
       {
         player.LogicPosition += 4;
 
-        if(player.LogicPosition > 299)
+        if(player.LogicPosition > NUMPIXELS - 1)
         {
-          if(player.LogicPosition == 300) { player.LogicPosition = 0;}
-          else if(player.LogicPosition == 301) { player.LogicPosition = 1;}
+          if(player.LogicPosition >= NUMPIXELS) { player.LogicPosition -= NUMPIXELS;}
+          /*else if(player.LogicPosition == 301) { player.LogicPosition = 1;}
           else if(player.LogicPosition == 302) { player.LogicPosition = 2;}
-          else if(player.LogicPosition == 303) { player.LogicPosition = 3;}
+          else if(player.LogicPosition == 303) { player.LogicPosition = 3;}*/
         }
       }
       else //player moves backward
@@ -2382,10 +2383,10 @@ void update(Player &player)
 
         if(player.LogicPosition < 0)
         {
-          if(player.LogicPosition == -1) { player.LogicPosition = 299;}
-          else if(player.LogicPosition == -2) { player.LogicPosition = 298;}
+          if(player.LogicPosition <= -1) { player.LogicPosition += NUMPIXELS;}
+          /*else if(player.LogicPosition == -2) { player.LogicPosition = 298;}
           else if(player.LogicPosition == -3) { player.LogicPosition = 297;}
-          else if(player.LogicPosition == -4) { player.LogicPosition = 296;}
+          else if(player.LogicPosition == -4) { player.LogicPosition = 296;}*/
         }
       }
     }
@@ -2395,11 +2396,11 @@ void update(Player &player)
       {
         player.LogicPosition += 3;
 
-        if(player.LogicPosition > 299)
+        if(player.LogicPosition > NUMPIXELS - 1)
         {
-          if(player.LogicPosition == 300) { player.LogicPosition = 0;}
-          else if(player.LogicPosition == 301) { player.LogicPosition = 1;}
-          else if(player.LogicPosition == 302) { player.LogicPosition = 2;}
+          if(player.LogicPosition >= NUMPIXELS) { player.LogicPosition -= NUMPIXELS;}
+          /*else if(player.LogicPosition == 301) { player.LogicPosition = 1;}
+          else if(player.LogicPosition == 302) { player.LogicPosition = 2;}*/
         }
       }
       else //player moves backward
@@ -2409,9 +2410,9 @@ void update(Player &player)
 
         if(player.LogicPosition < 0)
         {
-          if(player.LogicPosition == -1) { player.LogicPosition = 299;}
-          else if(player.LogicPosition == -2) { player.LogicPosition = 298;}
-          else if(player.LogicPosition == -3) { player.LogicPosition = 297;}
+          if(player.LogicPosition <= -1) { player.LogicPosition += NUMPIXELS;}
+          /*else if(player.LogicPosition == -2) { player.LogicPosition = 298;}
+          else if(player.LogicPosition == -3) { player.LogicPosition = 297;}*/
         }
       }
     }
@@ -2421,10 +2422,10 @@ void update(Player &player)
       {
         player.LogicPosition += 2;
 
-        if(player.LogicPosition > 299)
+        if(player.LogicPosition > NUMPIXELS - 1)
         {
-          if(player.LogicPosition == 300) { player.LogicPosition = 0;}
-          else if(player.LogicPosition == 301) { player.LogicPosition = 1;}
+          if(player.LogicPosition >= NUMPIXELS) { player.LogicPosition -= NUMPIXELS;}
+        /*  else if(player.LogicPosition == 301) { player.LogicPosition = 1;} */
         }
       }
       else //player moves backward
@@ -2434,8 +2435,8 @@ void update(Player &player)
 
         if(player.LogicPosition < 0)
         {
-          if(player.LogicPosition == -1) { player.LogicPosition = 299;}
-          else if(player.LogicPosition == -2) { player.LogicPosition = 298;}
+          if(player.LogicPosition <= -1) { player.LogicPosition += NUMPIXELS;}
+        /*  else if(player.LogicPosition == -2) { player.LogicPosition = 298;} */
         }
       }
     }
@@ -2445,9 +2446,9 @@ void update(Player &player)
       {
         player.LogicPosition += 1;
 
-        if(player.LogicPosition > 299)
+        if(player.LogicPosition > NUMPIXELS - 1)
         {
-          if(player.LogicPosition == 300) { player.LogicPosition = 0;}
+          if(player.LogicPosition == NUMPIXELS) { player.LogicPosition -= NUMPIXELS;}
         }
       }
       else //if player moving backwards
@@ -2456,7 +2457,7 @@ void update(Player &player)
 
         if(player.LogicPosition < 0)
         {
-          if(player.LogicPosition == -1) { player.LogicPosition = 299;}
+          if(player.LogicPosition == -1) { player.LogicPosition -= NUMPIXELS;}
         }
       }
     }
