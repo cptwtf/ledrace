@@ -12,9 +12,10 @@
 #define PLAYERONEBUTTONPIN   13  // Player 1 Controller Input Pin
 #define PLAYERTWOBUTTONPIN 2     // Player 2 Controller Input Pin
 #define PLAYERTHREEBUTTONPIN 4  // Player 3 Controller Input Pin
-#define NUMPIXELS         300   // LED Count
-#define SCREEN_WIDTH 128 // Set OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // Set LED display height, in pixels
+#define NUMPIXELS         233   // LED Count
+#define NUMLAPS           3     // Lap Count
+#define SCREEN_WIDTH      128 // Set OLED display width, in pixels
+#define SCREEN_HEIGHT     64 // Set LED display height, in pixels
 
 //create neopixel object
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
@@ -1884,7 +1885,7 @@ uint32_t startFinishLineColorInteger = pixels.Color(startFinishLineColorArrayRGB
 
 //game options
 int playerCount = 2;
-int maxLaps = 1;
+int maxLaps = NUMLAPS;
 
 
 
@@ -1930,7 +1931,7 @@ const int SPEED90PERCENT = MAX_SPEED / 100 * 90;
 //[objectNumber]
 //            [start][topmost][end][intensity]
 const int gravityObjectsCount = 12;
-int gravityObjects[gravityObjectsCount][4] = {{9,13,13,3},{27,27,33,3}, {52,107,107,7}, {110,110,115,7}, {120,129,129,8}, {130,130,139,8}, {144,150,150,5}, {163,163,168,5}, {172,185,185,13}, {186,186,198,13}, {201,207,207,5}, {220,220,226,5} };
+int gravityObjects[gravityObjectsCount][4] = {{9,13,13,1},{27,27,33,1}, {52,107,107,5}, {110,110,115,5}, {120,129,129,7}, {130,130,139,7}, {144,150,150,1}, {163,163,168,1}, {172,185,185,13}, {186,186,198,13}, {201,207,207,1}, {220,220,226,1} };
 
 unsigned long menuLastLoop = 0;
 const long menuLoopInterval = 128;
@@ -1961,7 +1962,7 @@ void setup() {
 
   //menu stuff
   //Setup, Clear and BZTGLogo
-  Serial.begin(115200);
+  //Serial.begin(115200);
   pinMode(buttonA, INPUT);
   pinMode(buttonB, INPUT);
   pinMode(buttonC, INPUT);
@@ -1978,6 +1979,7 @@ void setup() {
 
   pixels.begin();
   pixels.clear();
+  pixels.show();
 
 }
 
@@ -3228,6 +3230,14 @@ void loop()
       lastLoop = millis();
     }
   }
+
+  if(inGame == false)
+  {
+    pixels.clear();
+    pixels.show();
+  }
+
+
   if(millis() - menuLastLoop > menuLoopInterval)
   {
     menuloop(); // do menu stuff
