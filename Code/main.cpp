@@ -1881,7 +1881,7 @@ static const uint8_t optionenart5[1024] ={
 int startFinishLine = 10;
 byte startFinishLineColorArrayRGB[] = {254,254,254};
 uint32_t startFinishLineColorInteger = pixels.Color(startFinishLineColorArrayRGB[0], startFinishLineColorArrayRGB[1], startFinishLineColorArrayRGB[2]);
-
+int amountOfPlayers[6][2] = {{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
 
 //game options
 int playerCount = 2;
@@ -2776,6 +2776,7 @@ while(m == 1 && w > 1|| m < 1 && w > 1 || m == 6 && w > 1 || m > 6 && w > 1)//st
 
  while(m == 2 && w == 1)//multispieler
   {
+  if(digitalRead(PLAYERTHREEBUTTONPIN) == 1) { thirdPlayer = true; }
   display.clearDisplay();
   delay(300);
   display.drawBitmap(0,0, menuart8, 128, 64, 1);
@@ -3199,6 +3200,34 @@ void player2screen(){
     if (readingA == 1)           n = n + 1;
     if (readingB == 1)           n = n - 1;
     if (readingC == 1)           w = w + 1;
+  }
+
+  int getAmountOfPlayers (int ledToCheck)
+  {
+    for(int i = 0; i = 5; i++)
+    {
+      if(ledToCheck == amountOfPlayers[i][0])
+      {
+        return amountOfPlayers[i][1];
+      }
+    }
+  }
+
+  //to "clear" array spot set -1,-1
+  void setAmountOfPlayers (int ledToSet, int numberToSet)
+  {
+    //find first free array space
+    for(int i = 0; i = 5; i++)
+    {
+      if(amountOfPlayers[i][0] == -1)
+      {
+        //set
+        amountOfPlayers[i][0] = ledToSet;
+        amountOfPlayers[i][1] = numberToSet;
+
+        break;
+      }
+    }
   }
 
 void loop()
