@@ -2117,7 +2117,7 @@ void initGame(int playerCount)
   }
   else if(playerCount > 1) //draw all players by mixing their color
   {
-    for(int j = playerCount; j > 0; j--)
+    for(int j = 2; j > 0; j--)
     {
       pixels.setPixelColor(playerInstances[0].DrawPosition - j,
                 pixels.Color(mixedColorsArray[0],
@@ -3213,7 +3213,7 @@ void player2screen(){
     }
   }
 
-  //to "clear" array spot set -1,-1
+  //to "clear" array space set -1,-1
   void setAmountOfPlayers (int ledToSet, int numberToSet)
   {
     //find first free array space
