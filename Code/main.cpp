@@ -1881,7 +1881,7 @@ static const uint8_t optionenart5[1024] ={
 int startFinishLine = 10;
 byte startFinishLineColorArrayRGB[] = {254,254,254};
 uint32_t startFinishLineColorInteger = pixels.Color(startFinishLineColorArrayRGB[0], startFinishLineColorArrayRGB[1], startFinishLineColorArrayRGB[2]);
-int amountOfPlayers[6][2] = {{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
+int amountOfPlayers[6][2] = {{-1,1},{-1,1},{-1,1},{-1,1},{-1,1},{-1,1}};
 
 //game options
 int playerCount = 2;
@@ -2123,7 +2123,9 @@ void initGame(int playerCount)
                 pixels.Color(mixedColorsArray[0],
                              mixedColorsArray[1],
                              mixedColorsArray[2]));
+      setAmountOfPlayers(playerInstances[0].DrawPosition - j, playerCount);
     }
+
   }
 
 
@@ -2211,9 +2213,9 @@ void draw(Player &player)
         unmixedCol[0] = pixelColor >> 16;
 
         //retract entity color
-        unmixedCol[0]= (unmixedCol[0] - (playerColorArrayRGB[0] / 2)) * 2;
-        unmixedCol[1]= (unmixedCol[1] - (playerColorArrayRGB[1] / 2)) * 2;
-        unmixedCol[2]= (unmixedCol[2] - (playerColorArrayRGB[2] / 2)) * 2;
+        unmixedCol[0]= (unmixedCol[0] - (playerColorArrayRGB[0] / getAmountOfPlayers(sternmostPixel))) * getAmountOfPlayers(sternmostPixel);
+        unmixedCol[1]= (unmixedCol[1] - (playerColorArrayRGB[1] / getAmountOfPlayers(sternmostPixel))) * getAmountOfPlayers(sternmostPixel);
+        unmixedCol[2]= (unmixedCol[2] - (playerColorArrayRGB[2] / getAmountOfPlayers(sternmostPixel))) * getAmountOfPlayers(sternmostPixel);
 
         //set "demerged" color
         pixels.setPixelColor(sternmostPixel, pixels.Color(unmixedCol[0], unmixedCol[1], unmixedCol[2]));
@@ -3213,20 +3215,40 @@ void player2screen(){
     }
   }
 
-  //to "clear" array space set -1,-1
+  //
   void setAmountOfPlayers (int ledToSet, int numberToSet)
   {
+    bool found = false;
+    int foundIndex;
     //find first free array space
-    for(int i = 0; i = 5; i++)
+    for(int j = 0; j = 5; j++)
     {
-      if(amountOfPlayers[i][0] == -1)
+      if(amountOfPlayers[j][0] == ledToSet)
       {
-        //set
-        amountOfPlayers[i][0] = ledToSet;
-        amountOfPlayers[i][1] = numberToSet;
-
-        break;
+        found = true;
+        foundIndex = j;
       }
+    }
+
+    if(!found)
+    {
+      for(int i = 0; i = 5; i++)
+      {
+        if(amountOfPlayers[i][0] == -1)
+        {
+          //set
+          amountOfPlayers[i][0] = ledToSet;
+          amountOfPlayers[i][1] = numberToSet;
+          if(numberToSet <= 1) { amountOfPlayers[i][0] = -1; }
+
+          break;
+        }
+      }
+    }
+    else
+    {
+      amountOfPlayers[foundIndex][1] = numberToSet;
+      if(numberToSet <= 1) { amountOfPlayers[foundIndex][0] = -1; }
     }
   }
 
